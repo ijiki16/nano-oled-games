@@ -22,6 +22,8 @@ typedef uint8_t byte;
 #define PROGMEM
 #define F(s) (s)
 #define pgm_read_byte(p) (*(const uint8_t*)(p))
+#define pgm_read_word(p) (*(const uint16_t*)(p))
+#define _BV(b) (1 << (b))
 #define constrain(x, lo, hi) ((x) < (lo) ? (lo) : ((x) > (hi) ? (hi) : (x)))
 
 template <class A, class B> inline typename std::common_type<A, B>::type min(A a, B b) { return a < b ? a : b; }
@@ -56,3 +58,14 @@ struct FakeSerial {
   void println() {}
 };
 static FakeSerial Serial;
+
+// Buzzer: silent on the PC
+inline void tone(uint8_t, unsigned, unsigned long = 0) {}
+inline void noTone(uint8_t) {}
+
+// AVR registers used by NanoOledKit's sleep code. PINB reads "all keys up".
+static volatile uint8_t PINB = 0x1E, PCMSK0, PCIFR, PCICR, ADCSRA;
+#define PCIF0 0
+#define PCIE0 0
+#define ISR(vec) static void vec##_isr()
+extern uint32_t g_sleeps;   // how many times the sketch went to sleep

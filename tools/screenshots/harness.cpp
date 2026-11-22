@@ -5,6 +5,7 @@
 
 uint32_t g_ms = 0;
 uint8_t g_buttons = 0;
+uint32_t g_sleeps = 0;
 uint8_t g_eeprom[1024];
 float g_tempC = 17.2f, g_hum = 54.0f;   // the real readings from the user's room
 

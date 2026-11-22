@@ -23,7 +23,7 @@ if [ ! -f "$B/libu8g2.a" ]; then
 fi
 
 for game in cave_flyer kitty_pounce pocket_kitty dht_test; do
-  g++ -std=gnu++17 -O1 -w -I"$H/fake" -I"$U8G2" \
+  g++ -std=gnu++17 -O1 -w -I"$H/fake" -I"$U8G2" -I"$REPO/libraries/NanoOledKit/src" \
       -DGAME_INO="\"$REPO/$game/$game.ino\"" -DSCRIPT="\"$H/scripts/$game.h\"" \
       "$H/harness.cpp" "$B/libu8g2.a" -o "$B/run_$game"
   "$B/run_$game" "$B/pbm"

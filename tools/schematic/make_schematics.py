@@ -172,6 +172,8 @@ def power_powerboost(s):
         ("U5", "1.3\" OLED 128x64 SSD1306 + 4 keys"),
         ("BT1", "LiPo 1000 mAh, JST-PH 2-pin"),
         ("SW1", "small switch, EN to GND"),
+        ("BZ1", "passive piezo buzzer (optional)"),
+        ("R3", "100 Ω (buzzer)"),
         ("R1,R2", "100 kΩ (battery gauge)"),
     ]
     tips = ["Runtime ≈ 15 h (1000 mAh LiPo)",
@@ -200,7 +202,7 @@ def draw():
         s.text(966, 106 + i * 20, ref, 12, weight="bold", color=BODY, font=MONO)
         s.text(1024, 106 + i * 20, desc, 12)
     for i, t in enumerate(tips):
-        s.text(966, 284 + i * 18, t, 12, color=TXT if i == 0 else MUTED, weight="bold" if i == 0 else "normal")
+        s.text(966, 304 + i * 18, t, 12, color=TXT if i == 0 else MUTED, weight="bold" if i == 0 else "normal")
 
     # ======================= logic ======================================================
     s.rect(30, 456, 1240, 466, stroke=MUTED, fill="none", sw=1.2, dash="6 5", r=6)
@@ -210,15 +212,29 @@ def draw():
     nx, ny = 520, 500
     s.block(nx, ny, 180, 380, "U1", ["Arduino Nano", "ATmega328P", "USB: programming"],
             left=[("D2", 580), ("D3", 620),
-                  ("D9", 680), ("D10", 720), ("D11", 760), ("D12", 800)],
+                  ("D9", 680), ("D10", 720), ("D11", 760), ("D12", 800), ("D5", 840)],
             right=[("GND", 540), ("5V", 580), ("A5/SCL", 640), ("A4/SDA", 680), ("A1", 800)])
-    # optional: low-battery signal from the PowerBoost (no game uses it yet)
+    # optional: low-battery signal from the PowerBoost (all games show a warning)
     s.wire((nx - 20, 620), (nx - 40, 620))
     s.label(nx - 40, 620, "LOW_BAT", "left")
     s.text(nx - 40, 646, "optional", 11, anchor="end", color=MUTED)
     for pin_y, net in ((680, "K4"), (720, "K3"), (760, "K2"), (800, "K1")):
         s.wire((nx - 20, pin_y), (nx - 40, pin_y))
         s.label(nx - 40, pin_y, net, "left")
+    # optional buzzer for sound effects
+    s.wire((nx - 20, 840), (nx - 40, 840))
+    s.label(nx - 40, 840, "BUZZER", "left")
+    s.label(250, 720, "BUZZER", "left")
+    s.wire((250, 720), (290, 720))
+    s.resistor(290, 720, 780, "R3", "100 Ω")
+    s.wire((290, 780), (290, 792))
+    s.rect(276, 792, 28, 22, fill="white")
+    s.add('<circle cx="290" cy="803" r="7" fill="none" stroke="#7f1d1d" stroke-width="2"/>')
+    s.wire((290, 814), (290, 830))
+    s.gnd(290, 830)
+    s.text(316, 802, "BZ1", 12, weight="bold", color=BODY)
+    s.text(316, 817, "passive piezo (optional)", 11, color=MUTED)
+
     # Nano power
     s.wire((720, 540), (750, 540))
     s.gnd(750, 540)
@@ -268,7 +284,7 @@ def draw():
     s.text(rail + 14, 786, "(INPUT_PULLUP)", 10, color=MUTED)
 
     # Net label legend
-    s.text(44, 900, f"Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, +5V and GND symbols.",
+    s.text(44, 900, f"Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, BUZZER, +5V and GND symbols.",
            12, color=MUTED)
     return s.svg()
 

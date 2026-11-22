@@ -1,0 +1,50 @@
+name: build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install core and libraries
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+          arduino-cli lib install U8g2 "DHT sensor library" "Adafruit Unified Sensor"
+      - name: Compile every sketch
+        run: |
+          echo "| Sketch | Flash | RAM |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | --- | --- |" >> "$GITHUB_STEP_SUMMARY"
+          fail=0
+          for s in oled_test cave_flyer kitty_pounce pocket_kitty dht_test; do
+            out=$(arduino-cli compile -b arduino:avr:nano:cpu=atmega328old --libraries libraries "$s" 2>&1) \
+              || { echo "$out"; exit 1; }
+            flash=$(echo "$out" | sed -n 's/.*Sketch uses [0-9]* bytes (\([0-9]*\)%).*/\1/p')
+            ram=$(echo "$out" | sed -n 's/.*Global variables use [0-9]* bytes (\([0-9]*\)%).*/\1/p')
+            echo "$s: flash $flash%, RAM $ram%"
+            echo "| $s | $flash% | $ram% |" >> "$GITHUB_STEP_SUMMARY"
+            # The sketches need some free RAM for the stack
+            if [ "$ram" -gt 92 ]; then echo "::error::$s uses $ram% RAM (limit 92%)"; fail=1; fi
+          done
+          exit $fail
+
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Install U8g2 and PC tools
+        run: |
+          arduino-cli lib install U8g2
+          sudo apt-get update
+          sudo apt-get install -y g++ python3-pil
+      - name: Render screenshots
+        run: U8G2="$HOME/Arduino/libraries/U8g2/src" tools/screenshots/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: docs/screenshots/*.png

@@ -8,6 +8,10 @@
     CLEAN  - give her a bath (she won't like it)
   When a need gets low, a thought bubble shows what she wants.
   A happy cat gets happy eyes and floating hearts.
+  Leave a need at 0 for 2 minutes and she gets sick: FEED her, then let
+  her NAP to make her better.
+  She grows up: kitten (first 2 hours, with a bow), cat, and after
+  24 hours a wise old cat (with glasses).
 
   Mochi lives in YOUR room: a DHT11 sensor on D2 measures it.
     below 18 C: snow in the window, she shivers, says "brr", gets hungry faster
@@ -20,16 +24,23 @@
     *        pet Mochi (she purrs)
   Yarn game: ^ = move left, v = move right
   Nap: press any button to wake her up
+  INFO: * turns the sound on/off, any other key goes back
 
   Progress is saved in EEPROM (every 2 minutes and after each action).
   Hold * while powering on to adopt a new kitty (reset).
+  After 3 minutes without keys on the home screen the device sleeps
+  (screen off, Mochi naps); any key wakes her up.
 
   Wiring
     OLED SDA -> A4, SCL -> A5, VCC -> 5V, GND -> GND
     DHT11 DATA -> D2 (3-pin module), VCC -> 5V, GND -> GND
     K1 (^) -> D12, K2 (v) -> D11, K3 (#) -> D10, K4 (*) -> D9
-    Battery gauge (optional): switched battery + -> 100k -> A1 -> 100k -> GND
+    Battery gauge (optional): PowerBoost BAT -> 100k -> A1 -> 100k -> GND
       (see "Battery power" in the README; set BATTERY_MONITOR to false if not wired)
+    PowerBoost LBO (optional): D3, low-battery warning even without the gauge
+    Buzzer (optional): D5 -> 100 ohm -> passive piezo -> GND
+
+  Needs the NanoOledKit library from this repo's libraries/ folder.
 
   On battery, a battery icon sits in the top-right corner and INFO shows a
   battery bar. Mochi complains when it runs low and saves her progress
@@ -40,6 +51,7 @@
 #include <Wire.h>
 #include <U8g2lib.h>
 #include <EEPROM.h>
+#include <NanoOledKit.h>
 #include "sprites.h"
 #include <DHT.h>
 
@@ -94,20 +106,23 @@ void readBattery() {
 // Page mode (_2_): draws the screen in 4 strips, saving 768 bytes of RAM
 U8G2_SSD1306_128X64_NONAME_2_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 
-// ---- Buttons ---------------------------------------------------------------
-const uint8_t PIN_UP = 12, PIN_DOWN = 11, PIN_HASH = 10, PIN_STAR = 9;
-enum { B_UP = 1, B_DOWN = 2, B_HASH = 4, B_STAR = 8, B_ANY = 15 };
-uint8_t nowButtons = 0, prevButtons = 0;
+const uint32_t IDLE_SLEEP_MS = 180000UL;   // 3 minutes on the home screen
 
-void readButtons() {
-  prevButtons = nowButtons;
-  nowButtons = (digitalRead(PIN_UP)   == LOW ? B_UP   : 0) |
-               (digitalRead(PIN_DOWN) == LOW ? B_DOWN : 0) |
-               (digitalRead(PIN_HASH) == LOW ? B_HASH : 0) |
-               (digitalRead(PIN_STAR) == LOW ? B_STAR : 0);
-}
-bool pressed(uint8_t b) { return (nowButtons & b) & ~prevButtons; }
-bool isHeld(uint8_t b)  { return nowButtons & b; }
+// ---- Sounds ------------------------------------------------------------------
+const Note SND_MEOW[] PROGMEM   = {{700, 60}, {950, 90}, {760, 140}, {0, 0}};
+const Note SND_PURR[] PROGMEM   = {{90, 40}, {0, 30}, {90, 40}, {0, 30}, {90, 40}, {0, 0}};
+const Note SND_CLICK[] PROGMEM  = {{2200, 6}, {0, 0}};
+const Note SND_CRUNCH[] PROGMEM = {{220, 15}, {0, 0}};
+const Note SND_YUM[] PROGMEM    = {{1047, 70}, {1319, 110}, {0, 0}};
+const Note SND_CATCH[] PROGMEM  = {{1600, 30}, {2100, 50}, {0, 0}};
+const Note SND_DONE[] PROGMEM   = {{1047, 90}, {1319, 90}, {1568, 90}, {2093, 200}, {0, 0}};
+const Note SND_SPLASH[] PROGMEM = {{300, 25}, {520, 25}, {340, 25}, {610, 25}, {0, 0}};
+const Note SND_HMPH[] PROGMEM   = {{330, 70}, {262, 140}, {0, 0}};
+const Note SND_YAWN[] PROGMEM   = {{620, 120}, {520, 120}, {400, 220}, {0, 0}};
+const Note SND_SICK[] PROGMEM   = {{494, 150}, {440, 150}, {392, 300}, {0, 0}};
+const Note SND_BETTER[] PROGMEM = {{784, 80}, {988, 80}, {1175, 80}, {1568, 200}, {0, 0}};
+const Note SND_LOWBAT[] PROGMEM = {{2000, 60}, {0, 60}, {2000, 60}, {0, 0}};
+const Note SND_BLIP[] PROGMEM   = {{1500, 40}, {0, 0}};
 
 // ---- Layout ------------------------------------------------------------------
 const uint8_t FLOOR_Y = 61;
@@ -120,10 +135,15 @@ struct Save {
   uint8_t magic;
   uint8_t food, fun, energy, clean;
   uint16_t ageMin;
+  uint8_t sick;      // 0 = healthy, 1 = sick (needs food), 2 = fed (needs a nap)
 };
 Save pet;
 const int EE_ADDR = 32;
-const uint8_t EE_MAGIC = 0x4B;
+const uint8_t EE_MAGIC = 0x4C;
+const uint8_t EE_MAGIC_V1 = 0x4B;   // older save without the sick byte
+
+enum { KITTEN, ADULT, WISE };
+uint8_t stage() { return pet.ageMin < 120 ? KITTEN : pet.ageMin < 1440 ? ADULT : WISE; }
 
 void savePet() { EEPROM.put(EE_ADDR, pet); }  // put() only rewrites changed bytes
 
@@ -131,6 +151,7 @@ void adoptNewKitty() {
   pet.magic = EE_MAGIC;
   pet.food = 70; pet.fun = 70; pet.energy = 80; pet.clean = 90;
   pet.ageMin = 0;
+  pet.sick = 0;
   savePet();
 }
 
@@ -152,6 +173,8 @@ const char* speech = nullptr;
 uint8_t speechT = 0;
 
 uint8_t petCooldown = 0;
+uint8_t zeroSecs = 0;     // seconds with a need at 0 (2 minutes -> sick)
+bool lowBat = false;      // battery nearly empty (gauge below 5% or PowerBoost LBO)
 
 // floating hearts and Zs
 struct Particle { int8_t x, y; uint8_t t, kind; };  // kind 0 = heart, 1 = z
@@ -190,16 +213,28 @@ void tickNeeds() {
   if (seconds % 5 == 0) {
     readRoom();
     readBattery();
-    // Save once when the battery is nearly empty, before the protection cuts power
-    static bool savedLow = false;
-    if (batPct >= 0 && batPct < 5 && !savedLow) { savePet(); savedLow = true; }
-    if (batPct >= 10) savedLow = false;
+    // Save once when the battery is nearly empty, before it cuts out
+    bool low = (batPct >= 0 && batPct < 5) || lowBattery();
+    if (low && !lowBat) { savePet(); sfxPlay(SND_LOWBAT); }
+    lowBat = low;
+  }
+  // A need stuck at 0 for 2 minutes makes her sick
+  if (!pet.sick && mode != SLEEPING) {
+    bool empty = !pet.food || !pet.fun || !pet.energy || !pet.clean;
+    zeroSecs = empty ? zeroSecs + 1 : 0;
+    if (zeroSecs >= 120) {
+      pet.sick = 1; zeroSecs = 0;
+      say("i feel sick..", 70);
+      sfxPlay(SND_SICK);
+      savePet();
+    }
   }
   bool asleep = (mode == SLEEPING);
   uint8_t foodEvery = isCold() ? 4 : 6;      // keeping warm burns calories
   uint8_t energyEvery = isHot() ? 5 : 8;     // heat makes her sluggish
   if (seconds % (asleep ? foodEvery * 2 : foodEvery) == 0) addStat(pet.food, -1);
-  if (!asleep && seconds % 5 == 0) addStat(pet.fun, -1);
+  uint8_t funEvery = stage() == KITTEN ? 4 : 5;   // kittens want to play more
+  if (!asleep && seconds % funEvery == 0) addStat(pet.fun, -1);
   if (!asleep && seconds % energyEvery == 0) addStat(pet.energy, -1);
   if (asleep && seconds % 2 == 0) addStat(pet.energy, +1);
   if (seconds % 10 == 0) addStat(pet.clean, -1);
@@ -239,12 +274,27 @@ void drawRoom() {
 }
 
 void drawCat(int16_t x, const uint8_t* bits, int8_t bob) {
-  u8g2.drawXBMP(x, CAT_Y + bob, CAT_OPEN_W, CAT_OPEN_H, bits);
+  int16_t y = CAT_Y + bob;
+  u8g2.drawXBMP(x, y, CAT_OPEN_W, CAT_OPEN_H, bits);
+  if (stage() == KITTEN) {          // a bow between the ears
+    u8g2.drawBox(x + 8, y, 3, 4);
+    u8g2.drawBox(x + 13, y, 3, 4);
+    u8g2.drawBox(x + 11, y + 1, 2, 2);
+  } else if (stage() == WISE) {     // round glasses, drawn in black on her white face
+    u8g2.setDrawColor(0);
+    u8g2.drawFrame(x + 4, y + 5, 6, 6);
+    u8g2.drawFrame(x + 14, y + 5, 6, 6);
+    u8g2.drawHLine(x + 10, y + 6, 4);
+    u8g2.setDrawColor(1);
+  }
 }
 
 // Small battery icon (10x5), filled by charge; blinks when almost empty
 void drawBattery(uint8_t x, uint8_t y) {
-  if (batPct < 0) return;
+  if (batPct < 0) {  // no gauge: the PowerBoost's LBO line can still warn
+    if (lowBat && (frame / 15) % 2) drawLowBattery(u8g2, x, y);
+    return;
+  }
   if (batPct < 10 && (frame / 15) % 2) return;
   u8g2.drawFrame(x, y, 9, 5);
   u8g2.drawVLine(x + 9, y + 1, 3);
@@ -289,6 +339,10 @@ void drawThought(uint8_t need) {
   u8g2.drawRFrame(bx, 16, 16, 12, 3);
   u8g2.setFont(u8g2_font_5x7_tr);
   switch (need) {
+    case 9:  // sick: a thermometer
+      u8g2.drawFrame(bx + 7, 18, 3, 6);
+      u8g2.drawDisc(bx + 8, 24, 2);
+      break;
     case 0: u8g2.drawXBMP(bx + 3, 20, FISH_W, FISH_H, fish_bits); break;
     case 1: u8g2.drawXBMP(bx + 4, 18, YARN_W, YARN_H, yarn_bits); break;
     case 2: u8g2.drawStr(bx + 4, 25, "zz"); break;
@@ -318,19 +372,20 @@ void updateParticles() {
 
 void drawBar(uint8_t y, const char* label, uint8_t v) {
   u8g2.drawStr(2, y + 6, label);
-  u8g2.drawFrame(44, y, 80, 7);
-  u8g2.drawBox(46, y + 2, (v * 76) / 100, 3);
+  u8g2.drawFrame(44, y, 72, 7);
+  u8g2.drawBox(46, y + 2, (v * 68) / 100, 3);
 }
 
 // ---- Modes ---------------------------------------------------------------------
 void updateHome() {
-  if (pressed(B_UP))   menuSel = (menuSel + MENU_N - 1) % MENU_N;
-  if (pressed(B_DOWN)) menuSel = (menuSel + 1) % MENU_N;
+  if (repeat(B_UP))   { menuSel = (menuSel + MENU_N - 1) % MENU_N; sfxPlay(SND_CLICK); }
+  if (repeat(B_DOWN)) { menuSel = (menuSel + 1) % MENU_N; sfxPlay(SND_CLICK); }
 
   if (pressed(B_STAR) && !petCooldown) {
     addStat(pet.fun, 3);
     spawnParticle(catX + 8 + random(8), CAT_Y - 2, 0);
     say(random(2) ? "prrr" : "purr~", 40);
+    sfxPlay(SND_PURR);
     petCooldown = 20;
   }
   if (petCooldown) petCooldown--;
@@ -338,11 +393,12 @@ void updateHome() {
   if (pressed(B_HASH)) {
     switch (menuSel) {
       case 0:  // FEED
-        if (pet.food > 85) say("full!", 50);
+        if (pet.food > 85 && pet.sick != 1) say("full!", 50);
         else setMode(EATING);
         break;
       case 1:  // PLAY
-        if (pet.energy < 15) say("too sleepy", 60);
+        if (pet.sick) say("too sick..", 60);
+        else if (pet.energy < 15) say("too sleepy", 60);
         else {
           setMode(PLAYING);
           caught = missed = 0;
@@ -379,9 +435,15 @@ void updateHome() {
   }
 
   // Battery running low
-  if (batPct >= 0 && !speechT) {
-    if (batPct < 5 && random(150) == 0) say("charge me!", 50);
-    else if (batPct < 15 && random(400) == 0) say("low battery!", 50);
+  if (!speechT) {
+    if (lowBat && random(150) == 0) say("charge me!", 50);
+    else if (batPct >= 0 && batPct < 15 && random(400) == 0) say("low battery!", 50);
+  }
+
+  // Sick kitties feel sorry for themselves
+  if (pet.sick) {
+    if (!speechT && random(300) == 0) say(pet.sick == 1 ? "feed me.." : "need a nap..", 50);
+    return;
   }
 
   // Mood moments
@@ -389,7 +451,7 @@ void updateHome() {
     uint8_t m = mood();
     if (m >= 70) spawnParticle(catX + 8 + random(8), CAT_Y - 2, 0);
     else if (m < 30 && !speechT) say("meow...", 50);
-    else if (!speechT && random(3) == 0) say("meow!", 30);
+    else if (!speechT && random(3) == 0) { say("meow!", 30); sfxPlay(SND_MEOW); }
   }
 }
 
@@ -398,7 +460,7 @@ void drawHome() {
   bool walking = catX != targetX;
   int8_t bob = walking ? (frame / 4) % 2 : 0;
   const uint8_t* face = cat_open_bits;
-  if (blinkT) face = cat_blink_bits;
+  if (blinkT || pet.sick) face = cat_blink_bits;
   else if (mood() >= 70 && (frame / 90) % 3 == 0) face = cat_happy_bits;
   else if (speechT && (speech[0] == 'p')) face = cat_happy_bits;  // purring
   // Shiver in short bursts when cold
@@ -414,16 +476,19 @@ void drawHome() {
   drawParticles();
   if (speechT) drawSpeech(catX + 12);
   else {
-    uint8_t need = lowestNeed();
+    uint8_t need = pet.sick ? 9 : lowestNeed();
     if (need != 255 && (frame / 60) % 2) drawThought(need);
   }
   drawMenu();
 }
 
 void updateEating() {
+  if (modeT < 90 && modeT % 12 == 0) sfxPlay(SND_CRUNCH);
   if (modeT == 100) {
     addStat(pet.food, 35);
-    say("yum!", 45);
+    if (pet.sick == 1) { pet.sick = 2; say("thanks.. sleepy", 60); }
+    else say("yum!", 45);
+    sfxPlay(SND_YUM);
     spawnParticle(catX + 8, CAT_Y - 2, 0);
     savePet();
     setMode(HOME);
@@ -445,8 +510,8 @@ void drawEating() {
 
 void updatePlaying() {
   // ^ = left, v = right
-  if (isHeld(B_UP))   catX = max(0, catX - 3);
-  if (isHeld(B_DOWN)) catX = min(128 - CAT_OPEN_W, catX + 3);
+  if (held(B_UP))   catX = max(0, catX - 3);
+  if (held(B_DOWN)) catX = min(128 - CAT_OPEN_W, catX + 3);
 
   yarnY += yarnV;
   int16_t yx = yarnX >> 4, yy = yarnY >> 4;
@@ -454,6 +519,7 @@ void updatePlaying() {
   if (yy + YARN_H >= CAT_Y + 2 && yx + YARN_W > catX + 2 && yx < catX + CAT_OPEN_W - 2) {
     caught++;
     spawnParticle(catX + 8, CAT_Y - 4, 0);
+    sfxPlay(SND_CATCH);
     landed = true;
   } else if (yy + YARN_H >= FLOOR_Y) {
     missed++;
@@ -471,6 +537,7 @@ void updatePlaying() {
     addStat(pet.food, -3);
     snprintf(resultText, sizeof(resultText), "caught %u!", caught);
     savePet();
+    sfxPlay(SND_DONE);
     setMode(PLAY_DONE);
   }
 }
@@ -480,7 +547,7 @@ void drawPlaying() {
   int16_t yx = yarnX >> 4, yy = yarnY >> 4;
   u8g2.drawLine(yx + 4, yy, yx + 4 + ((frame / 5) % 3) - 1, 10);  // the string
   u8g2.drawXBMP(yx, yy, YARN_W, YARN_H, yarn_bits);
-  drawCat(catX, isHeld(B_UP | B_DOWN) ? cat_happy_bits : cat_open_bits, (frame / 4) % 2);
+  drawCat(catX, held(B_UP | B_DOWN) ? cat_happy_bits : cat_open_bits, (frame / 4) % 2);
   drawParticles();
   u8g2.setFont(u8g2_font_5x7_tr);
   char buf[12];
@@ -494,8 +561,15 @@ void drawPlaying() {
 void updateSleeping() {
   if (modeT % 45 == 0) spawnParticle(catX + 18, CAT_Y + 6, 1);
   if (modeT > 15 && (pressed(B_ANY) || pet.energy >= 100)) {
+    if (pet.sick == 2 && pet.energy >= 60) {
+      pet.sick = 0;
+      say("all better!", 60);
+      sfxPlay(SND_BETTER);
+    } else {
+      say(pet.energy >= 100 ? "*yawn* hi!" : "*yawn*", 50);
+      sfxPlay(SND_YAWN);
+    }
     savePet();
-    say(pet.energy >= 100 ? "*yawn* hi!" : "*yawn*", 50);
     setMode(HOME);
   }
 }
@@ -519,10 +593,12 @@ void drawSleeping() {
 }
 
 void updateBath() {
+  if (modeT % 30 == 1) sfxPlay(SND_SPLASH);
   if (modeT == 120) {
     pet.clean = 100;
     addStat(pet.fun, -5);
     say("hmph!", 50);
+    sfxPlay(SND_HMPH);
     savePet();
     setMode(HOME);
   }
@@ -550,9 +626,13 @@ void drawBath() {
 void drawInfo() {
   u8g2.setFont(u8g2_font_5x7_tr);
   char buf[26];
-  if (roomT == NO_READING) snprintf(buf, sizeof(buf), "MOCHI  age %um  room --", pet.ageMin);
-  else snprintf(buf, sizeof(buf), "MOCHI  age %um  %dC %u%%", pet.ageMin, roomT, roomH);
+  const char* who = stage() == KITTEN ? "KITTEN" : stage() == WISE ? "WISE CAT" : "MOCHI";
+  uint16_t age = pet.ageMin < 120 ? pet.ageMin : pet.ageMin / 60;
+  char unit = pet.ageMin < 120 ? 'm' : 'h';
+  if (roomT == NO_READING) snprintf(buf, sizeof(buf), "%s %u%c  room --", who, age, unit);
+  else snprintf(buf, sizeof(buf), "%s %u%c  %dC %u%%", who, age, unit, roomT, roomH);
   u8g2.drawStr(2, 7, buf);
+  sfxDrawIcon(u8g2, 120, 11);   // * turns the sound on/off
   u8g2.drawHLine(0, 9, 128);
   drawBar(11, "food", pet.food);
   drawBar(20, "fun", pet.fun);
@@ -561,17 +641,16 @@ void drawInfo() {
   if (batPct >= 0) drawBar(47, "battery", batPct);
   uint8_t m = mood();
   snprintf(buf, sizeof(buf), "mood: %s%s",
-           m >= 70 ? "very happy" : m >= 40 ? "ok" : "sad",
+           pet.sick ? "sick" : m >= 70 ? "very happy" : m >= 40 ? "ok" : "sad",
            isCold() ? " (cold)" : isHot() ? " (hot)" : "");
   drawCentered(buf, 63);
 }
 
 // ---- Main --------------------------------------------------------------------
 void setup() {
-  pinMode(PIN_UP, INPUT_PULLUP);
-  pinMode(PIN_DOWN, INPUT_PULLUP);
-  pinMode(PIN_HASH, INPUT_PULLUP);
-  pinMode(PIN_STAR, INPUT_PULLUP);
+  keysBegin();
+  sfxBegin();
+  powerBegin();
 
   u8g2.setBusClock(400000);
   u8g2.begin();
@@ -580,10 +659,15 @@ void setup() {
   readBattery();
 
   EEPROM.get(EE_ADDR, pet);
-  bool fresh = pet.magic != EE_MAGIC || digitalRead(PIN_STAR) == LOW;
+  if (pet.magic == EE_MAGIC_V1) {   // save from before the sick byte: keep the pet
+    pet.magic = EE_MAGIC;
+    pet.sick = 0;
+    savePet();
+  }
+  bool fresh = pet.magic != EE_MAGIC || held(B_STAR);
   if (fresh) adoptNewKitty();
   say(fresh ? "hi! i'm mochi" : "meow! hi!", 70);
-  readButtons();
+  sfxPlay(SND_MEOW);
 }
 
 void drawScreen() {
@@ -598,14 +682,16 @@ void drawScreen() {
       drawRoom();
       drawCat(catX, cat_happy_bits, 0);
       drawParticles();
-      u8g2.setFont(u8g2_font_ncenB10_tr);
+      u8g2.setFont(u8g2_font_5x7_tr);
       {  // banner with its own background so it doesn't mix with the window
-        uint8_t w = u8g2.getStrWidth(resultText) + 10;
+        uint8_t tw = u8g2.getStrWidth(resultText);
+        uint8_t w = tw + 12;
         uint8_t x = (128 - w) / 2;
-        u8g2.setDrawColor(0); u8g2.drawBox(x, 8, w, 19); u8g2.setDrawColor(1);
-        u8g2.drawRFrame(x, 8, w, 19, 4);
+        u8g2.setDrawColor(0); u8g2.drawBox(x, 8, w, 17); u8g2.setDrawColor(1);
+        u8g2.drawRFrame(x, 8, w, 17, 4);
+        u8g2.drawStr(x + 6, 20, resultText);   // drawn twice, 1 px apart: bold
+        u8g2.drawStr(x + 7, 20, resultText);
       }
-      drawCentered(resultText, 22);
       break;
   }
 }
@@ -616,7 +702,8 @@ void loop() {
   if ((int32_t)(now - nextFrame) < 0) return;
   nextFrame = now + 33;  // ~30 fps
 
-  readButtons();
+  readKeys();
+  sfxUpdate();
   tickNeeds();
   updateParticles();
   if (speechT) speechT--;
@@ -624,12 +711,24 @@ void loop() {
 
   // Game logic first...
   switch (mode) {
-    case HOME:     updateHome();     break;
+    case HOME:
+      updateHome();
+      // Long idle: save, screen off, chip asleep. Mochi naps until a key wakes her.
+      if (mode == HOME && idleMs() >= IDLE_SLEEP_MS) {
+        savePet();
+        powerSleep(u8g2);
+        say("*yawn* hi!", 60);
+        sfxPlay(SND_YAWN);
+      }
+      break;
     case EATING:   updateEating();   break;
     case PLAYING:  updatePlaying();  break;
     case SLEEPING: updateSleeping(); break;
     case BATH:     updateBath();     break;
-    case INFO:      if (modeT > 5 && pressed(B_ANY)) setMode(HOME); break;
+    case INFO:
+      if (modeT > 5 && pressed(B_STAR)) { sfxSetMuted(!sfxMuted()); sfxPlay(SND_BLIP); }
+      else if (modeT > 5 && pressed(B_ANY)) setMode(HOME);
+      break;
     case PLAY_DONE: if (modeT > 75) setMode(HOME); break;
   }
 

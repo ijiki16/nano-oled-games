@@ -104,14 +104,18 @@
 <text x="1024" y="186" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">LiPo 1000 mAh, JST-PH 2-pin</text>
 <text x="966" y="206" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">SW1</text>
 <text x="1024" y="206" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">small switch, EN to GND</text>
-<text x="966" y="226" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1,R2</text>
-<text x="1024" y="226" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">100 kΩ (battery gauge)</text>
-<text x="966" y="284" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#111827">Runtime ≈ 15 h (1000 mAh LiPo)</text>
-<text x="966" y="302" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Charging is micro-USB, not USB-C.</text>
-<text x="966" y="320" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Off = EN low: 5 V output disconnected,</text>
-<text x="966" y="338" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">  board draws ≈ 20 µA.</text>
-<text x="966" y="356" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">LOW_BAT (LBO) goes low below 3.2 V.</text>
-<text x="966" y="374" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Never wire the cell to Nano 5V or VIN.</text>
+<text x="966" y="226" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">BZ1</text>
+<text x="1024" y="226" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">passive piezo buzzer (optional)</text>
+<text x="966" y="246" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R3</text>
+<text x="1024" y="246" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">100 Ω (buzzer)</text>
+<text x="966" y="266" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1,R2</text>
+<text x="1024" y="266" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">100 kΩ (battery gauge)</text>
+<text x="966" y="304" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#111827">Runtime ≈ 15 h (1000 mAh LiPo)</text>
+<text x="966" y="322" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Charging is micro-USB, not USB-C.</text>
+<text x="966" y="340" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Off = EN low: 5 V output disconnected,</text>
+<text x="966" y="358" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">  board draws ≈ 20 µA.</text>
+<text x="966" y="376" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">LOW_BAT (LBO) goes low below 3.2 V.</text>
+<text x="966" y="394" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Never wire the cell to Nano 5V or VIN.</text>
 <rect x="30" y="456" width="1240" height="466" rx="6" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 5"/>
 <text x="44" y="476" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#6b7280">LOGIC</text>
 <rect x="520" y="500" width="180" height="380" rx="0" fill="#fffbea" stroke="#7f1d1d" stroke-width="2"/>
@@ -131,6 +135,8 @@
 <text x="526" y="764" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D11</text>
 <line x1="500" y1="800" x2="520" y2="800" stroke="#7f1d1d" stroke-width="2"/>
 <text x="526" y="804" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D12</text>
+<line x1="500" y1="840" x2="520" y2="840" stroke="#7f1d1d" stroke-width="2"/>
+<text x="526" y="844" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D5</text>
 <line x1="700" y1="540" x2="720" y2="540" stroke="#7f1d1d" stroke-width="2"/>
 <text x="694" y="544" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">GND</text>
 <line x1="700" y1="580" x2="720" y2="580" stroke="#7f1d1d" stroke-width="2"/>
@@ -157,6 +163,27 @@
 <polyline points="500,800 480,800" fill="none" stroke="#0f766e" stroke-width="2"/>
 <polygon points="480,800 472,791 447.0,791 447.0,809 472,809" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
 <text x="459.5" y="804" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">K1</text>
+<polyline points="500,840 480,840" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="480,840 472,831 417.0,831 417.0,849 472,849" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="444.5" y="844" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">BUZZER</text>
+<polygon points="250,720 242,711 187.0,711 187.0,729 242,729" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="214.5" y="724" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">BUZZER</text>
+<polyline points="250,720 290,720" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polyline points="290,720 290,728" fill="none" stroke="#0f766e" stroke-width="2"/>
+<rect x="283" y="728" width="14" height="44" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<polyline points="290,772 290,780" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="304" y="748.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R3</text>
+<text x="304" y="763.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">100 Ω</text>
+<polyline points="290,780 290,792" fill="none" stroke="#0f766e" stroke-width="2"/>
+<rect x="276" y="792" width="28" height="22" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<circle cx="290" cy="803" r="7" fill="none" stroke="#7f1d1d" stroke-width="2"/>
+<polyline points="290,814 290,830" fill="none" stroke="#0f766e" stroke-width="2"/>
+<line x1="290" y1="830" x2="290" y2="842" stroke="#b91c1c" stroke-width="2"/>
+<line x1="279" y1="842" x2="301" y2="842" stroke="#b91c1c" stroke-width="2"/>
+<line x1="283" y1="846" x2="297" y2="846" stroke="#b91c1c" stroke-width="2"/>
+<line x1="287" y1="850" x2="293" y2="850" stroke="#b91c1c" stroke-width="2"/>
+<text x="316" y="802" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">BZ1</text>
+<text x="316" y="817" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">passive piezo (optional)</text>
 <polyline points="720,540 750,540" fill="none" stroke="#0f766e" stroke-width="2"/>
 <line x1="750" y1="540" x2="750" y2="552" stroke="#b91c1c" stroke-width="2"/>
 <line x1="739" y1="552" x2="761" y2="552" stroke="#b91c1c" stroke-width="2"/>
@@ -274,5 +301,5 @@
 <text x="1114" y="760" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">keys pull</text>
 <text x="1114" y="773" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">pin to GND</text>
 <text x="1114" y="786" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">(INPUT_PULLUP)</text>
-<text x="44" y="900" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, +5V and GND symbols.</text>
+<text x="44" y="900" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, BUZZER, +5V and GND symbols.</text>
 </svg>

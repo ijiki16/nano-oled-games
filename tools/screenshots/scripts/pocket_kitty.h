@@ -1,5 +1,5 @@
 // Pocket Kitty: visit every activity
-#define SCRIPT_FRAMES 1640
+#define SCRIPT_FRAMES 2000
 uint8_t script(uint32_t f) {
   switch (f) {
     case 160: return B_HASH;   // FEED
@@ -28,5 +28,9 @@ void after(uint32_t f) {
   if (f == 1000) shot("kitty_nap");
   if (f == 1180) shot("kitty_bath");
   if (f == 1330) shot("kitty_info");
-  if (f == 1620) shot("kitty_home");   // heart above Mochi, snow in the window
+  if (f == 1620) shot("kitty_home");   // kitten with a bow, heart above, snow in the window
+  // fast-forward: a day old (glasses) and sick, thinking of the thermometer
+  if (f == 1640) { pet.ageMin = 1500; pet.sick = 1; speechT = 0; }
+  static bool sickShot = false;
+  if (!sickShot && f > 1700 && !speechT && (frame / 60) % 2 && catX == targetX) { shot("kitty_sick"); sickShot = true; }
 }

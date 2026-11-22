@@ -4,9 +4,9 @@ Small games for an **Arduino Nano** with a **1.3" 128x64 I2C OLED** module that 
 
 | Game | Folder | What it is |
 | --- | --- | --- |
-| Cave Flyer | [`cave_flyer/`](cave_flyer) | Fly through an endless scrolling cave that narrows and speeds up. Hold ^ or # to climb. |
-| Kitty Pounce | [`kitty_pounce/`](kitty_pounce) | A cat guards three shelves: pounce on mice, dodge dogs, eat fish for extra hearts. |
-| Pocket Kitty | [`pocket_kitty/`](pocket_kitty) | Virtual pet cat. Feed, play catch-the-yarn, nap and bathe Mochi. She reacts to your real room temperature (DHT11). Progress is saved. |
+| Cave Flyer | [`cave_flyer/`](cave_flyer) | Fly through an endless scrolling cave. Hold ^ or # to climb, grab coins; every 100 m the level goes up and the cave narrows and speeds up. |
+| Kitty Pounce | [`kitty_pounce/`](kitty_pounce) | A cat guards three shelves: pounce on mice, dodge dogs (they bark "!" first), eat fish for extra hearts, grab rare catnip for double points. |
+| Pocket Kitty | [`pocket_kitty/`](pocket_kitty) | Virtual pet cat. Feed, play catch-the-yarn, nap and bathe Mochi. She grows from kitten to wise old cat, can get sick if neglected, and reacts to your real room temperature (DHT11). Progress is saved. |
 | Screen test | [`oled_test/`](oled_test) | I2C scan, display test patterns and a button tester. |
 | DHT11 test | [`dht_test/`](dht_test) | Shows room temperature and humidity with min/max. |
 
@@ -19,14 +19,15 @@ Small games for an **Arduino Nano** with a **1.3" 128x64 I2C OLED** module that 
 
 ### Kitty Pounce
 <table>
-<tr><td><img src="docs/screenshots/pounce_title.png" width="256" alt="Kitty Pounce title screen"></td><td><img src="docs/screenshots/pounce_play.png" width="256" alt="Cat catches a mouse while a dog charges"></td><td><img src="docs/screenshots/pounce_gameover.png" width="256" alt="Game over screen"></td></tr>
+<tr><td><img src="docs/screenshots/pounce_title.png" width="256" alt="Kitty Pounce title screen"></td><td><img src="docs/screenshots/pounce_play.png" width="256" alt="Cat pounces while a dog barks ! at the shelf edge"></td><td><img src="docs/screenshots/pounce_catnip.png" width="256" alt="Catnip power-up: x2 points"></td></tr>
+<tr><td><img src="docs/screenshots/pounce_gameover.png" width="256" alt="Game over screen"></td><td></td><td></td></tr>
 </table>
 
 ### Pocket Kitty
 <table>
-<tr><td><img src="docs/screenshots/kitty_home.png" width="256" alt="Mochi at home, snow in the window, 17C on the wall"></td><td><img src="docs/screenshots/kitty_feed.png" width="256" alt="Eating from the bowl"></td><td><img src="docs/screenshots/kitty_yarn.png" width="256" alt="Catch-the-yarn game"></td></tr>
+<tr><td><img src="docs/screenshots/kitty_home.png" width="256" alt="Mochi as a kitten with a bow, snow in the window, 17C on the wall"></td><td><img src="docs/screenshots/kitty_feed.png" width="256" alt="Eating from the bowl"></td><td><img src="docs/screenshots/kitty_yarn.png" width="256" alt="Catch-the-yarn game"></td></tr>
 <tr><td><img src="docs/screenshots/kitty_yarn_done.png" width="256" alt="Yarn game result"></td><td><img src="docs/screenshots/kitty_nap.png" width="256" alt="Napping under the moon"></td><td><img src="docs/screenshots/kitty_bath.png" width="256" alt="Bath time"></td></tr>
-<tr><td><img src="docs/screenshots/kitty_info.png" width="256" alt="Needs, age, room reading and mood"></td><td><img src="docs/screenshots/dht_test.png" width="256" alt="DHT11 test sketch"></td><td></td></tr>
+<tr><td><img src="docs/screenshots/kitty_info.png" width="256" alt="Needs, age, room reading, mood and sound icon"></td><td><img src="docs/screenshots/kitty_sick.png" width="256" alt="Wise old cat with glasses, sick, thinking of a thermometer"></td><td><img src="docs/screenshots/dht_test.png" width="256" alt="DHT11 test sketch"></td></tr>
 </table>
 
 Mochi's room is cold (17 °C) in these shots, so it snows outside her window. The last image is the DHT11 test sketch.
@@ -63,7 +64,15 @@ Regenerate it with `python3 tools/schematic/make_schematics.py`.
 DHT11 temperature/humidity sensor (3-pin module): DATA -> D2, VCC -> 5V, GND -> GND.
 Only Pocket Kitty and the DHT11 test use it.
 
-Optional battery gauge: battery divider (100k/100k) -> A1. See [Battery power](#battery-power).
+Optional extras:
+
+| Part | Nano pin | Used for |
+| --- | --- | --- |
+| Passive piezo buzzer + 100 Ω resistor | D5 -> 100 Ω -> buzzer -> GND | Sound effects in all three games |
+| PowerBoost LBO | D3 | Low-battery warning in all three games |
+| Battery divider (100k/100k) | A1 | Battery % in Pocket Kitty. See [Battery power](#battery-power). |
+
+Without a buzzer the games just stay silent, and an unwired D3 reads "battery OK".
 
 Buttons connect to GND when pressed (the sketches use `INPUT_PULLUP`).
 
@@ -97,7 +106,7 @@ from the cell after boost losses: **about 15 hours** on a 1000 mAh cell.
 | JST-PH connector (BAT / GND) | The battery. **Check the +/- marks** next to the connector first: some LiPos have the wires swapped in the plug. |
 | 5V / GND | Nano 5V / GND |
 | EN | Switch to GND. EN is pulled high to the battery; closing the switch turns the 5 V output off. |
-| LBO | Optional: Nano D3. It drops to 0 V below 3.2 V (and lights the board's red LED). No game reads it yet. |
+| LBO | Optional: Nano D3. It drops to 0 V below 3.2 V (and lights the board's red LED). The games then show a blinking empty-battery icon. |
 | BAT | Optional: battery gauge divider, BAT → 100k → A1 → 100k → GND. |
 
 ```
@@ -118,6 +127,14 @@ PowerBoost BAT -- 100k --+-- 100k -- GND (optional gauge)
 - Unlike cheap IP5306 "power bank" boards, the PowerBoost does not switch itself off at low load.
 - Optional: removing the Nano's power LED saves 3–5 mA, about 10% more runtime.
 
+### Sleep after idle
+
+The games turn the screen off and put the Nano to sleep when no key is touched for a while: 1 minute on the
+title, pause and game-over screens of Cave Flyer and Kitty Pounce, 3 minutes on Pocket Kitty's home screen
+(Mochi naps and her needs pause). Any key wakes it up. Asleep, the device draws roughly 5–8 mA instead of
+about 40 mA, mostly the Nano's power LED, its USB chip and the boost converter. The EN switch is still the real
+off switch.
+
 ### Battery gauge in Pocket Kitty
 
 With the divider wired to A1, Pocket Kitty shows a battery icon in the top-right corner and a battery bar on
@@ -131,14 +148,21 @@ value in `VREF_MV`.
 Requires the [U8g2](https://github.com/olikraus/u8g2) library. Pocket Kitty and the DHT11 test also need
 Adafruit's "DHT sensor library" (and its dependency "Adafruit Unified Sensor").
 
+The three games share keys, sound and sleep code in [`libraries/NanoOledKit/`](libraries/NanoOledKit)
+(header-only). Pass `--libraries libraries` to arduino-cli, or in the Arduino IDE copy (or symlink) that folder
+into your sketchbook's `libraries/` folder.
+
 With [arduino-cli](https://arduino.github.io/arduino-cli/):
 
 ```sh
 arduino-cli core install arduino:avr
 arduino-cli lib install U8g2 "DHT sensor library" "Adafruit Unified Sensor"
-arduino-cli compile -b arduino:avr:nano pocket_kitty
+arduino-cli compile -b arduino:avr:nano --libraries libraries pocket_kitty
 arduino-cli upload  -b arduino:avr:nano -p /dev/ttyUSB0 pocket_kitty
 ```
+
+Every push is compiled by GitHub Actions ([`.github/workflows/build.yml`](.github/workflows/build.yml)), which
+also renders the screenshots.
 
 Many Nano clones have the old bootloader: if upload fails with `not in sync`, use
 `-b arduino:avr:nano:cpu=atmega328old`. In the Arduino IDE that is *Tools → Processor → ATmega328P (Old Bootloader)*.
@@ -150,4 +174,9 @@ Many Nano clones have the old bootloader: if upload fails with `not in sync`, us
   - Pocket Kitty: hold **\*** at power-on to adopt a new kitty.
 - Pocket Kitty room reactions: below 18 °C it snows outside the window and Mochi shivers and gets hungry faster;
   at 27 °C and up the sun shines and she sweats and tires faster. Change `COLD_C` / `HOT_C` to adjust.
-- The Nano has only 2 KB of RAM. Pocket Kitty uses U8g2 page mode (`_2_` constructor) to save 768 bytes.
+- Sound: on the title screens of Cave Flyer and Kitty Pounce, and on Pocket Kitty's INFO screen, **\*** turns
+  the sound on or off. The setting is shared by all games (EEPROM address 8).
+- Pocket Kitty grows up: kitten (first 2 hours of play, with a bow), cat, then a wise old cat with glasses after
+  24 hours. If a need stays at 0 for 2 minutes she gets sick: FEED her, then let her NAP.
+- Menus auto-repeat when you hold ^ or v.
+- The Nano has only 2 KB of RAM. All games use U8g2 page mode (`_2_` constructor) to save 768 bytes.
