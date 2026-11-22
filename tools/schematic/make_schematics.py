@@ -1,10 +1,9 @@
 """Draws the device schematics as SVG (and PNG via ImageMagick).
 
-One schematic per battery version; everything else is the same circuit:
-  Version 1: flat LiPo pouch     Version 2: 18650 cell
+Power: 1000 mAh LiPo on an Adafruit PowerBoost 500 Charger (charger and 5 V boost in one board).
 
 Usage: python3 tools/schematic/make_schematics.py      (from the repo root)
-Output: docs/schematics/schematic_v1_lipo.svg/.png, schematic_v2_18650.svg/.png
+Output: docs/schematics/schematic.svg and schematic.png
 """
 import pathlib
 import shutil
@@ -120,80 +119,86 @@ class Sheet:
                 f'<rect width="{W}" height="{H}" fill="white"/>\n{body}\n</svg>\n')
 
 
-def draw(version):
-    v1 = version == 1
+def power_powerboost(s):
+    """Adafruit PowerBoost 500 Charger = charger + 5 V boost in one board."""
+    yb, yg = 210, 290
+    s.battery(110, yb, yg, "BT1", ["LiPo 3.7 V 1000 mAh", "JST-PH 2-pin plug", "check +/- marks"])
+    s.wire((110, yb), (280, yb))
+    s.wire((110, yg), (280, yg))
+    # BAT net also feeds the gauge divider (drawn on the right, joined by the VBAT label)
+    s.dot(200, yb)
+    s.wire((200, yb), (200, 160))
+    s.label(200, 160, "VBAT", "right")
+
+    s.block(300, 130, 200, 220, "U2", ["PowerBoost 500 Charger", "Adafruit #1944", "charger + 5 V boost"],
+            left=[("BAT", yb), ("GND", yg)],
+            right=[("5V", 210), ("GND", 250), ("EN", 290), ("LBO", 330)])
+    s.rect(352, 86, 96, 26, fill="white")
+    s.text(400, 104, "micro-USB in", 12, anchor="middle", font=MONO)
+    s.line(400, 112, 400, 130)
+    s.text(460, 104, "charges at 500 mA, runs while charging", 11, color=MUTED)
+    s.text(300, 370, "BAT/GND = the board's JST-PH 2-pin connector", 11, color=MUTED)
+
+    s.wire((520, 210), (600, 210))
+    s.vcc(600, 210)
+    s.wire((520, 250), (540, 250))
+    s.gnd(540, 250)
+    # EN is pulled high to BAT: a small switch to GND turns the 5 V output off
+    s.wire((520, 290), (560, 290))
+    s.switch(564, 620, 290, "SW1", "closed = off")
+    s.wire((624, 290), (660, 290))
+    s.gnd(660, 290)
+    # LBO drops to 0 V below 3.2 V (also lights the board's red LED)
+    s.wire((520, 330), (560, 330))
+    s.label(560, 330, "LOW_BAT", "right")
+
+    # Battery gauge divider on VBAT
+    s.wire((780, 170), (780, 190))
+    s.label(780, 170, "VBAT", "left")
+    s.resistor(780, 190, 250, "R1", "100k")
+    s.dot(780, 265)
+    s.wire((780, 250), (780, 280))
+    s.wire((780, 265), (745, 265))
+    s.label(745, 265, "BAT_SENSE", "left")
+    s.resistor(780, 280, 340, "R2", "100k")
+    s.gnd(780, 340)
+    s.text(700, 386, "R1, R2: battery gauge (optional);", 11, color=MUTED)
+    s.text(700, 400, "on VBAT they draw ≈ 20 µA even when off", 11, color=MUTED)
+
+    notes = [
+        ("U1", "Arduino Nano (ATmega328P, 5 V)"),
+        ("U2", "Adafruit PowerBoost 500 Charger"),
+        ("U4", "DHT11, 3-pin module (pull-up on board)"),
+        ("U5", "1.3\" OLED 128x64 SSD1306 + 4 keys"),
+        ("BT1", "LiPo 1000 mAh, JST-PH 2-pin"),
+        ("SW1", "small switch, EN to GND"),
+        ("R1,R2", "100 kΩ (battery gauge)"),
+    ]
+    tips = ["Runtime ≈ 15 h (1000 mAh LiPo)",
+            "Charging is micro-USB, not USB-C.",
+            "Off = EN low: 5 V output disconnected,",
+            "  board draws ≈ 20 µA.",
+            "LOW_BAT (LBO) goes low below 3.2 V.",
+            "Never wire the cell to Nano 5V or VIN."]
+    return notes, tips
+
+
+def draw():
     s = Sheet()
-    title = "Version 1: flat LiPo" if v1 else "Version 2: 18650 cell"
-    s.text(40, 34, f"Nano OLED Games — schematic, {title}", 20, weight="bold")
+    s.text(40, 34, "Nano OLED Games — schematic (Adafruit PowerBoost 500 Charger)", 20, weight="bold")
     s.text(W - 40, 34, "github.com/ijiki16/nano-oled-games · 2026-11-22", 12, anchor="end", color=MUTED)
 
     # ======================= power and charging ======================================
     s.rect(30, 56, 900, 380, stroke=MUTED, fill="none", sw=1.2, dash="6 5", r=6)
     s.text(44, 76, "POWER AND CHARGING", 12, weight="bold", color=MUTED)
-
-    # BT1 -> TP4056 (battery minus goes to B-, NOT to ground: the protection switch sits in between)
-    yp, ym = 210, 260
-    s.battery(110, yp, ym, "BT1", ["LiPo 503450", "3.7 V 1000 mAh", "JST-PH: red = B+"] if v1
-              else ["18650 cell", "3.7 V 2500–3500 mAh", "in single-cell holder"])
-    s.wire((110, yp), (210, yp))
-    s.wire((110, ym), (210, ym))
-
-    s.block(230, 130, 150, 150, "U2", ["TP4056", "USB-C charger", "+ protection (DW01A)"],
-            left=[("B+", yp), ("B-", ym)], right=[("OUT+", yp), ("OUT-", ym)])
-    # USB-C charging connector on top
-    s.rect(262, 86, 86, 26, fill="white")
-    s.text(305, 104, "USB-C in", 12, anchor="middle", font=MONO)
-    s.line(305, 112, 305, 130)
-    s.text(360, 104, "charge: red LED on, blue/green = full", 11, color=MUTED)
-    s.wire((400, ym), (420, ym))
-    s.gnd(420, ym)
-
-    # SW1, then the switched battery line feeds the boost converter and the gauge divider
-    s.wire((400, yp), (440, yp))
-    s.switch(444, 500, yp, "SW1", "on/off")
-    s.wire((504, yp), (580, yp))
-    s.dot(580, yp)
-    s.wire((580, yp), (660, yp))
-    s.resistor(580, yp, yp + 60, "R1", "100k")
-    s.dot(580, yp + 75)
-    s.wire((580, yp + 60), (580, yp + 90))
-    s.wire((580, yp + 75), (545, yp + 75))
-    s.label(545, yp + 75, "BAT_SENSE", "left")
-    s.resistor(580, yp + 90, yp + 150, "R2", "100k")
-    s.gnd(580, yp + 150)
-    s.text(600, yp + 180, "R1, R2: battery gauge (optional)", 11, color=MUTED)
-
-    s.block(680, 130, 150, 150, "U3", ["5 V boost", "fixed 5 V, ≥ 500 mA", "(MT3608: set 5.0 V first!)"],
-            left=[("VIN", yp), ("GND", ym)], right=[("VOUT", yp), ("GND", ym)])
-    s.wire((660, ym), (650, ym))
-    s.gnd(650, ym)
-    s.wire((850, ym), (870, ym))
-    s.gnd(870, ym)
-    s.wire((850, yp), (890, yp))
-    s.vcc(890, yp)
+    notes, tips = power_powerboost(s)
 
     # ======================= parts notes ===============================================
     s.rect(950, 56, 320, 380, stroke=MUTED, fill="#f9fafb", sw=1.2, r=6)
     s.text(966, 80, "PARTS", 12, weight="bold", color=MUTED)
-    notes = [
-        ("U1", "Arduino Nano (ATmega328P, 5 V)"),
-        ("U2", "TP4056 USB-C module with protection"),
-        ("U3", "5 V boost, e.g. Pololu U1V11F5"),
-        ("U4", "DHT11, 3-pin module (pull-up on board)"),
-        ("U5", "1.3\" OLED 128x64 SSD1306 + 4 keys"),
-        ("BT1", "LiPo 503450 1000 mAh" if v1 else "18650 2500–3500 mAh"),
-        ("SW1", "slide switch"),
-        ("R1,R2", "100 kΩ (battery gauge)"),
-    ]
     for i, (ref, desc) in enumerate(notes):
         s.text(966, 106 + i * 20, ref, 12, weight="bold", color=BODY, font=MONO)
         s.text(1024, 106 + i * 20, desc, 12)
-    tips = ([f"Runtime ≈ {'15' if v1 else '40'} h (≈ 40 mA at 5 V)",
-             "Never wire the cell to Nano 5V or VIN.",
-             "Avoid IP5306 power-bank boards:",
-             "  they switch off below ≈ 50 mA.",
-             "Program over the Nano's own USB;",
-             "  switch SW1 off while uploading."])
     for i, t in enumerate(tips):
         s.text(966, 284 + i * 18, t, 12, color=TXT if i == 0 else MUTED, weight="bold" if i == 0 else "normal")
 
@@ -204,8 +209,13 @@ def draw(version):
     # U1 Nano
     nx, ny = 520, 500
     s.block(nx, ny, 180, 380, "U1", ["Arduino Nano", "ATmega328P", "USB: programming"],
-            left=[("D2", 580), ("D9", 680), ("D10", 720), ("D11", 760), ("D12", 800)],
+            left=[("D2", 580), ("D3", 620),
+                  ("D9", 680), ("D10", 720), ("D11", 760), ("D12", 800)],
             right=[("GND", 540), ("5V", 580), ("A5/SCL", 640), ("A4/SDA", 680), ("A1", 800)])
+    # optional: low-battery signal from the PowerBoost (no game uses it yet)
+    s.wire((nx - 20, 620), (nx - 40, 620))
+    s.label(nx - 40, 620, "LOW_BAT", "left")
+    s.text(nx - 40, 646, "optional", 11, anchor="end", color=MUTED)
     for pin_y, net in ((680, "K4"), (720, "K3"), (760, "K2"), (800, "K1")):
         s.wire((nx - 20, pin_y), (nx - 40, pin_y))
         s.label(nx - 40, pin_y, net, "left")
@@ -258,7 +268,8 @@ def draw(version):
     s.text(rail + 14, 786, "(INPUT_PULLUP)", 10, color=MUTED)
 
     # Net label legend
-    s.text(44, 900, "Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), +5V and GND symbols.", 12, color=MUTED)
+    s.text(44, 900, f"Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, +5V and GND symbols.",
+           12, color=MUTED)
     return s.svg()
 
 
@@ -266,14 +277,13 @@ def main():
     repo = pathlib.Path(__file__).resolve().parents[2]
     out = repo / "docs" / "schematics"
     out.mkdir(parents=True, exist_ok=True)
-    for version, name in ((1, "schematic_v1_lipo"), (2, "schematic_v2_18650")):
-        svg = out / f"{name}.svg"
-        svg.write_text(draw(version))
-        print("wrote", svg)
-        if shutil.which("magick"):
-            png = out / f"{name}.png"
-            subprocess.run(["magick", "-density", "96", str(svg), str(png)], check=True)
-            print("wrote", png)
+    svg = out / "schematic.svg"
+    svg.write_text(draw())
+    print("wrote", svg)
+    if shutil.which("magick"):
+        png = out / "schematic.png"
+        subprocess.run(["magick", "-density", "96", str(svg), str(png)], check=True)
+        print("wrote", png)
 
 
 if __name__ == "__main__":

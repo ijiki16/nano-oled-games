@@ -35,20 +35,14 @@ These are rendered from the real sketches on a PC, not photographed: [`tools/scr
 runs each game with a fake Arduino core and an autopilot, and saves U8g2's screen buffer.
 Run `tools/screenshots/build.sh` to regenerate them after changing a game.
 
-## Schematics
+## Schematic
 
-The full device: battery, charger, boost converter, Nano, OLED module with its keys, DHT11 and the
-optional battery gauge. The two versions differ only in the battery (see [Battery power](#battery-power)).
+The full device: LiPo battery, Adafruit PowerBoost 500 Charger, Nano, OLED module with its keys, DHT11 and the
+optional battery gauge (see [Battery power](#battery-power)). [SVG version](docs/schematics/schematic.svg)
 
-**Version 1: flat LiPo** ([SVG](docs/schematics/schematic_v1_lipo.svg))
+![Schematic: LiPo, Adafruit PowerBoost 500 Charger, Nano, OLED with keys, DHT11](docs/schematics/schematic.png)
 
-![Schematic, version 1: flat LiPo](docs/schematics/schematic_v1_lipo.png)
-
-**Version 2: 18650 cell** ([SVG](docs/schematics/schematic_v2_18650.svg))
-
-![Schematic, version 2: 18650 cell](docs/schematics/schematic_v2_18650.png)
-
-Regenerate them with `python3 tools/schematic/make_schematics.py`.
+Regenerate it with `python3 tools/schematic/make_schematics.py`.
 
 ## Hardware
 
@@ -78,67 +72,57 @@ Buttons connect to GND when pressed (the sketches use `INPUT_PULLUP`).
 
 ## Battery power
 
-The Nano needs a steady 5 V, but a Li-ion cell gives 3.0–4.2 V. So the battery goes through a charger and a
-5 V boost converter:
+The Nano needs a steady 5 V, but a LiPo cell gives 3.0–4.2 V. The
+[Adafruit PowerBoost 500 Charger](https://learn.adafruit.com/adafruit-powerboost-500-plus-charger) (#1944)
+charges the cell and boosts it to 5 V on one board:
 
-**cell → TP4056 charger/protection → on/off switch → 5 V boost → Nano 5V pin**
+**LiPo → PowerBoost 500 Charger (charger + 5 V boost) → Nano 5V pin**
 
 The device draws about 40 mA at 5 V (Nano ~20–25 mA, OLED 10–20 mA, DHT11 <1 mA), which is about 64 mA
-from the cell after boost losses.
+from the cell after boost losses: **about 15 hours** on a 1000 mAh cell.
 
-### Parts for both versions
+### Parts
 
 | Part | Notes |
 | --- | --- |
-| TP4056 USB-C charger module **with protection** (DW01A + 8205A chips, 6 pads: IN±, B±, OUT±) | Charges at 1 A by default (R_PROG = 1.2 kΩ) and cuts off at over-discharge or short circuit. |
-| 5 V boost module, **fixed 5 V** output, ≥ 500 mA (e.g. Pololu U1V11F5) | An adjustable MT3608 also works, but **set it to 5.0 V with a multimeter first**: they ship at 12–28 V and would destroy the Nano. |
-| Slide switch | On/off, between TP4056 OUT+ and the boost input. |
+| Adafruit PowerBoost 500 Charger (#1944) | Charger + 5 V boost. Charges over micro-USB at up to 500 mA. |
+| 3.7 V 1S LiPo, e.g. **1000 mAh**, with protection board and **JST-PH 2-pin (2.0 mm)** plug | Adafruit's own LiPos plug straight in. Fits flat behind the OLED board. |
+| Small slide switch | On/off, between EN and GND. |
 | 2 × 100 kΩ resistors | Voltage divider for Pocket Kitty's battery gauge (optional). |
-
-Avoid all-in-one "power bank" boards (IP5306 and similar): they switch off automatically when the load is below
-about 50 mA, and this device draws about 40 mA.
-
-### Version 1: flat LiPo (small, about 15 hours)
-
-| Part | Notes |
-| --- | --- |
-| 3.7 V 1S LiPo pouch, e.g. **503450, 1000 mAh**, with protection board and JST-PH 2.0 plug | Fits flat behind the OLED board. |
-
-- The 1 A charge current is 1C for a 1000 mAh cell, which is fine. For a smaller cell (for example 500 mAh),
-  replace R_PROG on the TP4056 with 2.4 kΩ (≈ 500 mA).
-- **Check the JST plug polarity** before connecting: the red wire must go to B+. Some cells are wired the other way.
-
-### Version 2: 18650 cell (bigger, about 40 hours)
-
-| Part | Notes |
-| --- | --- |
-| One **18650 cell, 2500–3500 mAh**, from a known brand (Samsung, LG, Sony/Murata, Panasonic) | Avoid "9900 mAh" fakes. |
-| Single-cell 18650 holder with wires | Or a cell with welded tabs. Never solder directly to the cell. |
-
-The 1 A default charge current is fine for an 18650.
 
 ### Wiring
 
+| PowerBoost pin | Connect to |
+| --- | --- |
+| JST-PH connector (BAT / GND) | The battery. **Check the +/- marks** next to the connector first: some LiPos have the wires swapped in the plug. |
+| 5V / GND | Nano 5V / GND |
+| EN | Switch to GND. EN is pulled high to the battery; closing the switch turns the 5 V output off. |
+| LBO | Optional: Nano D3. It drops to 0 V below 3.2 V (and lights the board's red LED). No game reads it yet. |
+| BAT | Optional: battery gauge divider, BAT → 100k → A1 → 100k → GND. |
+
 ```
-Battery +  -> TP4056 B+          TP4056 OUT+ -> switch --+--> boost VIN+
-Battery -  -> TP4056 B-          TP4056 OUT- ------------+--> boost GND  -> Nano GND
-                                                         |    boost 5V   -> Nano 5V pin
-                                                         +-- 100k --+-- 100k -- GND
-                                                                    +--> Nano A1
+LiPo (JST-PH) -> PowerBoost BAT/GND      PowerBoost 5V  -> Nano 5V pin
+                                         PowerBoost GND -> Nano GND
+PowerBoost EN  -- switch -- GND          (closed = off)
+PowerBoost LBO -> Nano D3                (optional)
+PowerBoost BAT -- 100k --+-- 100k -- GND (optional gauge)
+                         +--> Nano A1
 ```
 
-- **Charging:** plug USB-C into the TP4056 (red LED = charging, blue/green = full). You can keep playing while it
-  charges; switching the device off lets the charger finish cleanly.
-- **Uploading code** over the Nano's USB with the battery on is safe, but switch the battery off while uploading.
+- **Charging:** plug micro-USB into the PowerBoost. The device keeps running while it charges.
+- **Off** only disconnects the 5 V output: the board still draws about 20 µA, plus about 20 µA through the
+  gauge divider, which sits on the always-on battery line.
+- **Uploading code** over the Nano's USB with the battery on is safe, but switching it off keeps the battery
+  reading honest.
 - **Never** connect the cell directly to the Nano's 5V or VIN pin. VIN needs 7 V or more.
-- The divider sits after the switch, so it draws nothing when the device is off (about 20 µA when on).
+- Unlike cheap IP5306 "power bank" boards, the PowerBoost does not switch itself off at low load.
 - Optional: removing the Nano's power LED saves 3–5 mA, about 10% more runtime.
 
 ### Battery gauge in Pocket Kitty
 
 With the divider wired to A1, Pocket Kitty shows a battery icon in the top-right corner and a battery bar on
 the INFO screen. Below 15% Mochi says "low battery!", below 5% "charge me!", and she saves her progress
-before the TP4056 cuts the power. If A1 is not wired, set `BATTERY_MONITOR` to `false` at the top of the sketch.
+before the battery runs out. If A1 is not wired, set `BATTERY_MONITOR` to `false` at the top of the sketch.
 An unconnected A1 reads random values. If the percentage looks wrong, measure the Nano's 5V pin and put that
 value in `VREF_MV`.
 

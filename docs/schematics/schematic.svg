@@ -1,124 +1,117 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1300" height="940" viewBox="0 0 1300 940">
 <rect width="1300" height="940" fill="white"/>
-<text x="40" y="34" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="20" text-anchor="start" font-weight="bold" fill="#111827">Nano OLED Games — schematic, Version 2: 18650 cell</text>
+<text x="40" y="34" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="20" text-anchor="start" font-weight="bold" fill="#111827">Nano OLED Games — schematic (Adafruit PowerBoost 500 Charger)</text>
 <text x="1260" y="34" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="end" font-weight="normal" fill="#6b7280">github.com/ijiki16/nano-oled-games · 2026-11-22</text>
 <rect x="30" y="56" width="900" height="380" rx="6" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 5"/>
 <text x="44" y="76" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#6b7280">POWER AND CHARGING</text>
-<polyline points="110,210 110,221.0" fill="none" stroke="#0f766e" stroke-width="2"/>
-<line x1="94" y1="221.0" x2="126" y2="221.0" stroke="#7f1d1d" stroke-width="2"/>
-<line x1="102" y1="230.0" x2="118" y2="230.0" stroke="#7f1d1d" stroke-width="4"/>
-<line x1="94" y1="239.0" x2="126" y2="239.0" stroke="#7f1d1d" stroke-width="2"/>
-<line x1="102" y1="248.0" x2="118" y2="248.0" stroke="#7f1d1d" stroke-width="4"/>
-<polyline points="110,248.0 110,260" fill="none" stroke="#0f766e" stroke-width="2"/>
-<text x="84" y="221.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="16" text-anchor="start" font-weight="bold" fill="#7f1d1d">+</text>
+<polyline points="110,210 110,236.0" fill="none" stroke="#0f766e" stroke-width="2"/>
+<line x1="94" y1="236.0" x2="126" y2="236.0" stroke="#7f1d1d" stroke-width="2"/>
+<line x1="102" y1="245.0" x2="118" y2="245.0" stroke="#7f1d1d" stroke-width="4"/>
+<line x1="94" y1="254.0" x2="126" y2="254.0" stroke="#7f1d1d" stroke-width="2"/>
+<line x1="102" y1="263.0" x2="118" y2="263.0" stroke="#7f1d1d" stroke-width="4"/>
+<polyline points="110,263.0 110,290" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="84" y="236.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="16" text-anchor="start" font-weight="bold" fill="#7f1d1d">+</text>
 <text x="58" y="198" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#7f1d1d">BT1</text>
-<text x="58" y="282" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">18650 cell</text>
-<text x="58" y="297" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">3.7 V 2500–3500 mAh</text>
-<text x="58" y="312" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">in single-cell holder</text>
-<polyline points="110,210 210,210" fill="none" stroke="#0f766e" stroke-width="2"/>
-<polyline points="110,260 210,260" fill="none" stroke="#0f766e" stroke-width="2"/>
-<rect x="230" y="130" width="150" height="150" rx="0" fill="#fffbea" stroke="#7f1d1d" stroke-width="2"/>
-<text x="230" y="122" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#7f1d1d">U2</text>
-<text x="305.0" y="152" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#111827">TP4056</text>
-<text x="305.0" y="168" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">USB-C charger</text>
-<text x="305.0" y="184" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">+ protection (DW01A)</text>
-<line x1="210" y1="210" x2="230" y2="210" stroke="#7f1d1d" stroke-width="2"/>
-<text x="236" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">B+</text>
-<line x1="210" y1="260" x2="230" y2="260" stroke="#7f1d1d" stroke-width="2"/>
-<text x="236" y="264" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">B-</text>
-<line x1="380" y1="210" x2="400" y2="210" stroke="#7f1d1d" stroke-width="2"/>
-<text x="374" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">OUT+</text>
-<line x1="380" y1="260" x2="400" y2="260" stroke="#7f1d1d" stroke-width="2"/>
-<text x="374" y="264" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">OUT-</text>
-<rect x="262" y="86" width="86" height="26" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
-<text x="305" y="104" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#111827">USB-C in</text>
-<line x1="305" y1="112" x2="305" y2="130" stroke="#7f1d1d" stroke-width="2"/>
-<text x="360" y="104" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">charge: red LED on, blue/green = full</text>
-<polyline points="400,260 420,260" fill="none" stroke="#0f766e" stroke-width="2"/>
-<line x1="420" y1="260" x2="420" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="409" y1="272" x2="431" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="413" y1="276" x2="427" y2="276" stroke="#b91c1c" stroke-width="2"/>
-<line x1="417" y1="280" x2="423" y2="280" stroke="#b91c1c" stroke-width="2"/>
-<polyline points="400,210 440,210" fill="none" stroke="#0f766e" stroke-width="2"/>
-<circle cx="444" cy="210" r="3.5" fill="white" stroke="#7f1d1d" stroke-width="2"/>
-<circle cx="500" cy="210" r="3.5" fill="white" stroke="#7f1d1d" stroke-width="2"/>
-<line x1="447" y1="208" x2="496" y2="194" stroke="#7f1d1d" stroke-width="2"/>
-<text x="472.0" y="184" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="bold" fill="#7f1d1d">SW1</text>
-<text x="472.0" y="232" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">on/off</text>
-<polyline points="504,210 580,210" fill="none" stroke="#0f766e" stroke-width="2"/>
-<circle cx="580" cy="210" r="4" fill="#0f766e"/>
-<polyline points="580,210 660,210" fill="none" stroke="#0f766e" stroke-width="2"/>
-<polyline points="580,210 580,218" fill="none" stroke="#0f766e" stroke-width="2"/>
-<rect x="573" y="218" width="14" height="44" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
-<polyline points="580,262 580,270" fill="none" stroke="#0f766e" stroke-width="2"/>
-<text x="594" y="238.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1</text>
-<text x="594" y="253.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">100k</text>
-<circle cx="580" cy="285" r="4" fill="#0f766e"/>
-<polyline points="580,270 580,300" fill="none" stroke="#0f766e" stroke-width="2"/>
-<polyline points="580,285 545,285" fill="none" stroke="#0f766e" stroke-width="2"/>
-<polygon points="545,285 537,276 459.5,276 459.5,294 537,294" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
-<text x="498.25" y="289" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">BAT_SENSE</text>
-<polyline points="580,300 580,308" fill="none" stroke="#0f766e" stroke-width="2"/>
-<rect x="573" y="308" width="14" height="44" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
-<polyline points="580,352 580,360" fill="none" stroke="#0f766e" stroke-width="2"/>
-<text x="594" y="328.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R2</text>
-<text x="594" y="343.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">100k</text>
-<line x1="580" y1="360" x2="580" y2="372" stroke="#b91c1c" stroke-width="2"/>
-<line x1="569" y1="372" x2="591" y2="372" stroke="#b91c1c" stroke-width="2"/>
-<line x1="573" y1="376" x2="587" y2="376" stroke="#b91c1c" stroke-width="2"/>
-<line x1="577" y1="380" x2="583" y2="380" stroke="#b91c1c" stroke-width="2"/>
-<text x="600" y="390" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">R1, R2: battery gauge (optional)</text>
-<rect x="680" y="130" width="150" height="150" rx="0" fill="#fffbea" stroke="#7f1d1d" stroke-width="2"/>
-<text x="680" y="122" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#7f1d1d">U3</text>
-<text x="755.0" y="152" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#111827">5 V boost</text>
-<text x="755.0" y="168" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">fixed 5 V, ≥ 500 mA</text>
-<text x="755.0" y="184" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">(MT3608: set 5.0 V first!)</text>
-<line x1="660" y1="210" x2="680" y2="210" stroke="#7f1d1d" stroke-width="2"/>
-<text x="686" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">VIN</text>
-<line x1="660" y1="260" x2="680" y2="260" stroke="#7f1d1d" stroke-width="2"/>
-<text x="686" y="264" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">GND</text>
-<line x1="830" y1="210" x2="850" y2="210" stroke="#7f1d1d" stroke-width="2"/>
-<text x="824" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">VOUT</text>
-<line x1="830" y1="260" x2="850" y2="260" stroke="#7f1d1d" stroke-width="2"/>
-<text x="824" y="264" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">GND</text>
-<polyline points="660,260 650,260" fill="none" stroke="#0f766e" stroke-width="2"/>
-<line x1="650" y1="260" x2="650" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="639" y1="272" x2="661" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="643" y1="276" x2="657" y2="276" stroke="#b91c1c" stroke-width="2"/>
-<line x1="647" y1="280" x2="653" y2="280" stroke="#b91c1c" stroke-width="2"/>
-<polyline points="850,260 870,260" fill="none" stroke="#0f766e" stroke-width="2"/>
-<line x1="870" y1="260" x2="870" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="859" y1="272" x2="881" y2="272" stroke="#b91c1c" stroke-width="2"/>
-<line x1="863" y1="276" x2="877" y2="276" stroke="#b91c1c" stroke-width="2"/>
-<line x1="867" y1="280" x2="873" y2="280" stroke="#b91c1c" stroke-width="2"/>
-<polyline points="850,210 890,210" fill="none" stroke="#0f766e" stroke-width="2"/>
-<line x1="890" y1="210" x2="890" y2="196" stroke="#b91c1c" stroke-width="2"/>
-<line x1="880" y1="196" x2="900" y2="196" stroke="#b91c1c" stroke-width="3"/>
-<text x="890" y="190" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="bold" fill="#b91c1c">+5V</text>
+<text x="58" y="312" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">LiPo 3.7 V 1000 mAh</text>
+<text x="58" y="327" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">JST-PH 2-pin plug</text>
+<text x="58" y="342" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">check +/- marks</text>
+<polyline points="110,210 280,210" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polyline points="110,290 280,290" fill="none" stroke="#0f766e" stroke-width="2"/>
+<circle cx="200" cy="210" r="4" fill="#0f766e"/>
+<polyline points="200,210 200,160" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="200,160 208,151 248.0,151 248.0,169 208,169" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="228.0" y="164" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">VBAT</text>
+<rect x="300" y="130" width="200" height="220" rx="0" fill="#fffbea" stroke="#7f1d1d" stroke-width="2"/>
+<text x="300" y="122" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#7f1d1d">U2</text>
+<text x="400.0" y="152" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="middle" font-weight="bold" fill="#111827">PowerBoost 500 Charger</text>
+<text x="400.0" y="168" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">Adafruit #1944</text>
+<text x="400.0" y="184" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">charger + 5 V boost</text>
+<line x1="280" y1="210" x2="300" y2="210" stroke="#7f1d1d" stroke-width="2"/>
+<text x="306" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">BAT</text>
+<line x1="280" y1="290" x2="300" y2="290" stroke="#7f1d1d" stroke-width="2"/>
+<text x="306" y="294" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">GND</text>
+<line x1="500" y1="210" x2="520" y2="210" stroke="#7f1d1d" stroke-width="2"/>
+<text x="494" y="214" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">5V</text>
+<line x1="500" y1="250" x2="520" y2="250" stroke="#7f1d1d" stroke-width="2"/>
+<text x="494" y="254" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">GND</text>
+<line x1="500" y1="290" x2="520" y2="290" stroke="#7f1d1d" stroke-width="2"/>
+<text x="494" y="294" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">EN</text>
+<line x1="500" y1="330" x2="520" y2="330" stroke="#7f1d1d" stroke-width="2"/>
+<text x="494" y="334" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">LBO</text>
+<rect x="352" y="86" width="96" height="26" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<text x="400" y="104" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="normal" fill="#111827">micro-USB in</text>
+<line x1="400" y1="112" x2="400" y2="130" stroke="#7f1d1d" stroke-width="2"/>
+<text x="460" y="104" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">charges at 500 mA, runs while charging</text>
+<text x="300" y="370" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">BAT/GND = the board's JST-PH 2-pin connector</text>
+<polyline points="520,210 600,210" fill="none" stroke="#0f766e" stroke-width="2"/>
+<line x1="600" y1="210" x2="600" y2="196" stroke="#b91c1c" stroke-width="2"/>
+<line x1="590" y1="196" x2="610" y2="196" stroke="#b91c1c" stroke-width="3"/>
+<text x="600" y="190" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="bold" fill="#b91c1c">+5V</text>
+<polyline points="520,250 540,250" fill="none" stroke="#0f766e" stroke-width="2"/>
+<line x1="540" y1="250" x2="540" y2="262" stroke="#b91c1c" stroke-width="2"/>
+<line x1="529" y1="262" x2="551" y2="262" stroke="#b91c1c" stroke-width="2"/>
+<line x1="533" y1="266" x2="547" y2="266" stroke="#b91c1c" stroke-width="2"/>
+<line x1="537" y1="270" x2="543" y2="270" stroke="#b91c1c" stroke-width="2"/>
+<polyline points="520,290 560,290" fill="none" stroke="#0f766e" stroke-width="2"/>
+<circle cx="564" cy="290" r="3.5" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<circle cx="620" cy="290" r="3.5" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<line x1="567" y1="288" x2="616" y2="274" stroke="#7f1d1d" stroke-width="2"/>
+<text x="592.0" y="264" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="middle" font-weight="bold" fill="#7f1d1d">SW1</text>
+<text x="592.0" y="312" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">closed = off</text>
+<polyline points="624,290 660,290" fill="none" stroke="#0f766e" stroke-width="2"/>
+<line x1="660" y1="290" x2="660" y2="302" stroke="#b91c1c" stroke-width="2"/>
+<line x1="649" y1="302" x2="671" y2="302" stroke="#b91c1c" stroke-width="2"/>
+<line x1="653" y1="306" x2="667" y2="306" stroke="#b91c1c" stroke-width="2"/>
+<line x1="657" y1="310" x2="663" y2="310" stroke="#b91c1c" stroke-width="2"/>
+<polyline points="520,330 560,330" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="560,330 568,321 630.5,321 630.5,339 568,339" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="599.25" y="334" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">LOW_BAT</text>
+<polyline points="780,170 780,190" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="780,170 772,161 732.0,161 732.0,179 772,179" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="752.0" y="174" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">VBAT</text>
+<polyline points="780,190 780,198" fill="none" stroke="#0f766e" stroke-width="2"/>
+<rect x="773" y="198" width="14" height="44" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<polyline points="780,242 780,250" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="794" y="218.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1</text>
+<text x="794" y="233.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">100k</text>
+<circle cx="780" cy="265" r="4" fill="#0f766e"/>
+<polyline points="780,250 780,280" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polyline points="780,265 745,265" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="745,265 737,256 659.5,256 659.5,274 737,274" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="698.25" y="269" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">BAT_SENSE</text>
+<polyline points="780,280 780,288" fill="none" stroke="#0f766e" stroke-width="2"/>
+<rect x="773" y="288" width="14" height="44" rx="0" fill="white" stroke="#7f1d1d" stroke-width="2"/>
+<polyline points="780,332 780,340" fill="none" stroke="#0f766e" stroke-width="2"/>
+<text x="794" y="308.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R2</text>
+<text x="794" y="323.0" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">100k</text>
+<line x1="780" y1="340" x2="780" y2="352" stroke="#b91c1c" stroke-width="2"/>
+<line x1="769" y1="352" x2="791" y2="352" stroke="#b91c1c" stroke-width="2"/>
+<line x1="773" y1="356" x2="787" y2="356" stroke="#b91c1c" stroke-width="2"/>
+<line x1="777" y1="360" x2="783" y2="360" stroke="#b91c1c" stroke-width="2"/>
+<text x="700" y="386" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">R1, R2: battery gauge (optional);</text>
+<text x="700" y="400" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#6b7280">on VBAT they draw ≈ 20 µA even when off</text>
 <rect x="950" y="56" width="320" height="380" rx="6" fill="#f9fafb" stroke="#6b7280" stroke-width="1.2"/>
 <text x="966" y="80" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#6b7280">PARTS</text>
 <text x="966" y="106" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U1</text>
 <text x="1024" y="106" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">Arduino Nano (ATmega328P, 5 V)</text>
 <text x="966" y="126" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U2</text>
-<text x="1024" y="126" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">TP4056 USB-C module with protection</text>
-<text x="966" y="146" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U3</text>
-<text x="1024" y="146" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">5 V boost, e.g. Pololu U1V11F5</text>
-<text x="966" y="166" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U4</text>
-<text x="1024" y="166" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">DHT11, 3-pin module (pull-up on board)</text>
-<text x="966" y="186" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U5</text>
-<text x="1024" y="186" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">1.3" OLED 128x64 SSD1306 + 4 keys</text>
-<text x="966" y="206" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">BT1</text>
-<text x="1024" y="206" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">18650 2500–3500 mAh</text>
-<text x="966" y="226" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">SW1</text>
-<text x="1024" y="226" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">slide switch</text>
-<text x="966" y="246" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1,R2</text>
-<text x="1024" y="246" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">100 kΩ (battery gauge)</text>
-<text x="966" y="284" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#111827">Runtime ≈ 40 h (≈ 40 mA at 5 V)</text>
-<text x="966" y="302" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Never wire the cell to Nano 5V or VIN.</text>
-<text x="966" y="320" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Avoid IP5306 power-bank boards:</text>
-<text x="966" y="338" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">  they switch off below ≈ 50 mA.</text>
-<text x="966" y="356" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Program over the Nano's own USB;</text>
-<text x="966" y="374" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">  switch SW1 off while uploading.</text>
+<text x="1024" y="126" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">Adafruit PowerBoost 500 Charger</text>
+<text x="966" y="146" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U4</text>
+<text x="1024" y="146" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">DHT11, 3-pin module (pull-up on board)</text>
+<text x="966" y="166" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">U5</text>
+<text x="1024" y="166" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">1.3" OLED 128x64 SSD1306 + 4 keys</text>
+<text x="966" y="186" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">BT1</text>
+<text x="1024" y="186" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">LiPo 1000 mAh, JST-PH 2-pin</text>
+<text x="966" y="206" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">SW1</text>
+<text x="1024" y="206" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">small switch, EN to GND</text>
+<text x="966" y="226" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="bold" fill="#7f1d1d">R1,R2</text>
+<text x="1024" y="226" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">100 kΩ (battery gauge)</text>
+<text x="966" y="284" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#111827">Runtime ≈ 15 h (1000 mAh LiPo)</text>
+<text x="966" y="302" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Charging is micro-USB, not USB-C.</text>
+<text x="966" y="320" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Off = EN low: 5 V output disconnected,</text>
+<text x="966" y="338" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">  board draws ≈ 20 µA.</text>
+<text x="966" y="356" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">LOW_BAT (LBO) goes low below 3.2 V.</text>
+<text x="966" y="374" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Never wire the cell to Nano 5V or VIN.</text>
 <rect x="30" y="456" width="1240" height="466" rx="6" fill="none" stroke="#6b7280" stroke-width="1.2" stroke-dasharray="6 5"/>
 <text x="44" y="476" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="bold" fill="#6b7280">LOGIC</text>
 <rect x="520" y="500" width="180" height="380" rx="0" fill="#fffbea" stroke="#7f1d1d" stroke-width="2"/>
@@ -128,6 +121,8 @@
 <text x="610.0" y="554" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="middle" font-weight="normal" fill="#6b7280">USB: programming</text>
 <line x1="500" y1="580" x2="520" y2="580" stroke="#7f1d1d" stroke-width="2"/>
 <text x="526" y="584" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D2</text>
+<line x1="500" y1="620" x2="520" y2="620" stroke="#7f1d1d" stroke-width="2"/>
+<text x="526" y="624" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D3</text>
 <line x1="500" y1="680" x2="520" y2="680" stroke="#7f1d1d" stroke-width="2"/>
 <text x="526" y="684" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="start" font-weight="normal" fill="#111827">D9</text>
 <line x1="500" y1="720" x2="520" y2="720" stroke="#7f1d1d" stroke-width="2"/>
@@ -146,6 +141,10 @@
 <text x="694" y="684" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">A4/SDA</text>
 <line x1="700" y1="800" x2="720" y2="800" stroke="#7f1d1d" stroke-width="2"/>
 <text x="694" y="804" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="end" font-weight="normal" fill="#111827">A1</text>
+<polyline points="500,620 480,620" fill="none" stroke="#0f766e" stroke-width="2"/>
+<polygon points="480,620 472,611 409.5,611 409.5,629 472,629" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
+<text x="440.75" y="624" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">LOW_BAT</text>
+<text x="480" y="646" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="end" font-weight="normal" fill="#6b7280">optional</text>
 <polyline points="500,680 480,680" fill="none" stroke="#0f766e" stroke-width="2"/>
 <polygon points="480,680 472,671 447.0,671 447.0,689 472,689" fill="#eff6ff" stroke="#1d4ed8" stroke-width="1.5"/>
 <text x="459.5" y="684" font-family="Noto Sans Mono, DejaVu Sans Mono, monospace" font-size="12" text-anchor="middle" font-weight="bold" fill="#1d4ed8">K4</text>
@@ -275,5 +274,5 @@
 <text x="1114" y="760" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">keys pull</text>
 <text x="1114" y="773" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">pin to GND</text>
 <text x="1114" y="786" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#6b7280">(INPUT_PULLUP)</text>
-<text x="44" y="900" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), +5V and GND symbols.</text>
+<text x="44" y="900" font-family="Noto Sans, DejaVu Sans, Arial, sans-serif" font-size="12" text-anchor="start" font-weight="normal" fill="#6b7280">Same name = connected: K1–K4 (keys), BAT_SENSE (gauge), VBAT, LOW_BAT, +5V and GND symbols.</text>
 </svg>
