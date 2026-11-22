@@ -35,6 +35,21 @@ These are rendered from the real sketches on a PC, not photographed: [`tools/scr
 runs each game with a fake Arduino core and an autopilot, and saves U8g2's screen buffer.
 Run `tools/screenshots/build.sh` to regenerate them after changing a game.
 
+## Schematics
+
+The full device: battery, charger, boost converter, Nano, OLED module with its keys, DHT11 and the
+optional battery gauge. The two versions differ only in the battery (see [Battery power](#battery-power)).
+
+**Version 1: flat LiPo** ([SVG](docs/schematics/schematic_v1_lipo.svg))
+
+![Schematic, version 1: flat LiPo](docs/schematics/schematic_v1_lipo.png)
+
+**Version 2: 18650 cell** ([SVG](docs/schematics/schematic_v2_18650.svg))
+
+![Schematic, version 2: 18650 cell](docs/schematics/schematic_v2_18650.png)
+
+Regenerate them with `python3 tools/schematic/make_schematics.py`.
+
 ## Hardware
 
 - Arduino Nano (ATmega328P)
