@@ -10,6 +10,31 @@ Small games for an **Arduino Nano** with a **1.3" 128x64 I2C OLED** module that 
 | Screen test | [`oled_test/`](oled_test) | I2C scan, display test patterns and a button tester. |
 | DHT11 test | [`dht_test/`](dht_test) | Shows room temperature and humidity with min/max. |
 
+## Screenshots
+
+### Cave Flyer
+<table>
+<tr><td><img src="docs/screenshots/cave_title.png" width="256" alt="Cave Flyer title screen"></td><td><img src="docs/screenshots/cave_play.png" width="256" alt="Flying through the cave"></td><td><img src="docs/screenshots/cave_gameover.png" width="256" alt="Crashed screen with score"></td></tr>
+</table>
+
+### Kitty Pounce
+<table>
+<tr><td><img src="docs/screenshots/pounce_title.png" width="256" alt="Kitty Pounce title screen"></td><td><img src="docs/screenshots/pounce_play.png" width="256" alt="Cat catches a mouse while a dog charges"></td><td><img src="docs/screenshots/pounce_gameover.png" width="256" alt="Game over screen"></td></tr>
+</table>
+
+### Pocket Kitty
+<table>
+<tr><td><img src="docs/screenshots/kitty_home.png" width="256" alt="Mochi at home, snow in the window, 17C on the wall"></td><td><img src="docs/screenshots/kitty_feed.png" width="256" alt="Eating from the bowl"></td><td><img src="docs/screenshots/kitty_yarn.png" width="256" alt="Catch-the-yarn game"></td></tr>
+<tr><td><img src="docs/screenshots/kitty_yarn_done.png" width="256" alt="Yarn game result"></td><td><img src="docs/screenshots/kitty_nap.png" width="256" alt="Napping under the moon"></td><td><img src="docs/screenshots/kitty_bath.png" width="256" alt="Bath time"></td></tr>
+<tr><td><img src="docs/screenshots/kitty_info.png" width="256" alt="Needs, age, room reading and mood"></td><td><img src="docs/screenshots/dht_test.png" width="256" alt="DHT11 test sketch"></td><td></td></tr>
+</table>
+
+Mochi's room is cold (17 °C) in these shots, so it snows outside her window. The last image is the DHT11 test sketch.
+
+These are rendered from the real sketches on a PC, not photographed: [`tools/screenshots/`](tools/screenshots)
+runs each game with a fake Arduino core and an autopilot, and saves U8g2's screen buffer.
+Run `tools/screenshots/build.sh` to regenerate them after changing a game.
+
 ## Hardware
 
 - Arduino Nano (ATmega328P)

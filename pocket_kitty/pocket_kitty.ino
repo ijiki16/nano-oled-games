@@ -484,7 +484,8 @@ void drawBath() {
   }
   randomSeed(micros());
   u8g2.setFont(u8g2_font_5x7_tr);
-  u8g2.drawStr(catX < 70 ? catX + 32 : catX - 32, 28, "scrub");
+  // beside the tub, below the window and the thermometer sign
+  u8g2.drawStr(catX < 70 ? catX + 32 : catX - 30, 50, "scrub");
 }
 
 void drawInfo() {
@@ -537,6 +538,12 @@ void drawScreen() {
       drawCat(catX, cat_happy_bits, 0);
       drawParticles();
       u8g2.setFont(u8g2_font_ncenB10_tr);
+      {  // banner with its own background so it doesn't mix with the window
+        uint8_t w = u8g2.getStrWidth(resultText) + 10;
+        uint8_t x = (128 - w) / 2;
+        u8g2.setDrawColor(0); u8g2.drawBox(x, 8, w, 19); u8g2.setDrawColor(1);
+        u8g2.drawRFrame(x, 8, w, 19, 4);
+      }
       drawCentered(resultText, 22);
       break;
   }
