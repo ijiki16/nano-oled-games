@@ -6,8 +6,9 @@ Small games for an **Arduino Nano** with a **1.3" 128x64 I2C OLED** module that 
 | --- | --- | --- |
 | Cave Flyer | [`cave_flyer/`](cave_flyer) | Fly through an endless scrolling cave that narrows and speeds up. Hold ^ or # to climb. |
 | Kitty Pounce | [`kitty_pounce/`](kitty_pounce) | A cat guards three shelves: pounce on mice, dodge dogs, eat fish for extra hearts. |
-| Pocket Kitty | [`pocket_kitty/`](pocket_kitty) | Virtual pet cat. Feed, play catch-the-yarn, nap and bathe Mochi. Progress is saved. |
+| Pocket Kitty | [`pocket_kitty/`](pocket_kitty) | Virtual pet cat. Feed, play catch-the-yarn, nap and bathe Mochi. She reacts to your real room temperature (DHT11). Progress is saved. |
 | Screen test | [`oled_test/`](oled_test) | I2C scan, display test patterns and a button tester. |
+| DHT11 test | [`dht_test/`](dht_test) | Shows room temperature and humidity with min/max. |
 
 ## Hardware
 
@@ -25,6 +26,9 @@ Small games for an **Arduino Nano** with a **1.3" 128x64 I2C OLED** module that 
 | K3 (#) | D10 |
 | K4 (*) | D9 |
 
+DHT11 temperature/humidity sensor (3-pin module): DATA -> D2, VCC -> 5V, GND -> GND.
+Only Pocket Kitty and the DHT11 test use it.
+
 Buttons connect to GND when pressed (the sketches use `INPUT_PULLUP`).
 
 > Many 1.3" modules use the SH1106 controller instead. If the picture is shifted or has a noisy stripe,
@@ -32,13 +36,14 @@ Buttons connect to GND when pressed (the sketches use `INPUT_PULLUP`).
 
 ## Building
 
-Requires the [U8g2](https://github.com/olikraus/u8g2) library.
+Requires the [U8g2](https://github.com/olikraus/u8g2) library. Pocket Kitty and the DHT11 test also need
+Adafruit's "DHT sensor library" (and its dependency "Adafruit Unified Sensor").
 
 With [arduino-cli](https://arduino.github.io/arduino-cli/):
 
 ```sh
 arduino-cli core install arduino:avr
-arduino-cli lib install U8g2
+arduino-cli lib install U8g2 "DHT sensor library" "Adafruit Unified Sensor"
 arduino-cli compile -b arduino:avr:nano pocket_kitty
 arduino-cli upload  -b arduino:avr:nano -p /dev/ttyUSB0 pocket_kitty
 ```
@@ -51,4 +56,6 @@ Many Nano clones have the old bootloader: if upload fails with `not in sync`, us
 - Best scores and the pet's state are stored in EEPROM, each game in its own slot.
   - Cave Flyer / Kitty Pounce: hold **v** at power-on to reset the best score.
   - Pocket Kitty: hold **\*** at power-on to adopt a new kitty.
+- Pocket Kitty room reactions: below 18 °C it snows outside the window and Mochi shivers and gets hungry faster;
+  at 27 °C and up the sun shines and she sweats and tires faster. Change `COLD_C` / `HOT_C` to adjust.
 - The Nano has only 2 KB of RAM. Pocket Kitty uses U8g2 page mode (`_2_` constructor) to save 768 bytes.

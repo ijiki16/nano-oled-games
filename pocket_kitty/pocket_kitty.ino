@@ -9,6 +9,11 @@
   When a need gets low, a thought bubble shows what she wants.
   A happy cat gets happy eyes and floating hearts.
 
+  Mochi lives in YOUR room: a DHT11 sensor on D2 measures it.
+    below 18 C: snow in the window, she shivers, says "brr", gets hungry faster
+    27 C and up: sun in the window, she sweats and pants, gets tired faster
+  The thermometer sign on the wall and the INFO screen show the room readings.
+
   Controls (home screen)
     ^ / v    choose menu item (FEED PLAY NAP WASH INFO)
     #        do it
@@ -21,6 +26,7 @@
 
   Wiring
     OLED SDA -> A4, SCL -> A5, VCC -> 5V, GND -> GND
+    DHT11 DATA -> D2 (3-pin module), VCC -> 5V, GND -> GND
     K1 (^) -> D12, K2 (v) -> D11, K3 (#) -> D10, K4 (*) -> D9
 */
 
@@ -29,6 +35,25 @@
 #include <U8g2lib.h>
 #include <EEPROM.h>
 #include "sprites.h"
+#include <DHT.h>
+
+// ---- Room sensor: DHT11 on D2 ----------------------------------------------------
+// Mochi feels your real room: below COLD_C she shivers and gets hungry faster,
+// at HOT_C and above she pants and gets tired faster.
+DHT dht(2, DHT11);
+const int8_t NO_READING = -100;
+int8_t  roomT = NO_READING;   // degrees C
+uint8_t roomH = 0;            // % humidity
+const int8_t COLD_C = 18, HOT_C = 27;
+
+bool isCold() { return roomT != NO_READING && roomT < COLD_C; }
+bool isHot()  { return roomT >= HOT_C; }
+
+void readRoom() {
+  float t = dht.readTemperature();
+  float h = dht.readHumidity();
+  if (!isnan(t) && !isnan(h)) { roomT = (int8_t)lround(t); roomH = (uint8_t)lround(h); }
+}
 
 // Page mode (_2_): draws the screen in 4 strips, saving 768 bytes of RAM
 U8G2_SSD1306_128X64_NONAME_2_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
@@ -126,10 +151,13 @@ uint8_t lowestNeed() {
 void tickNeeds() {
   if (++frame % 30) return;
   seconds++;
+  if (seconds % 5 == 0) readRoom();
   bool asleep = (mode == SLEEPING);
-  if (seconds % (asleep ? 12 : 6) == 0) addStat(pet.food, -1);
+  uint8_t foodEvery = isCold() ? 4 : 6;      // keeping warm burns calories
+  uint8_t energyEvery = isHot() ? 5 : 8;     // heat makes her sluggish
+  if (seconds % (asleep ? foodEvery * 2 : foodEvery) == 0) addStat(pet.food, -1);
   if (!asleep && seconds % 5 == 0) addStat(pet.fun, -1);
-  if (!asleep && seconds % 8 == 0) addStat(pet.energy, -1);
+  if (!asleep && seconds % energyEvery == 0) addStat(pet.energy, -1);
   if (asleep && seconds % 2 == 0) addStat(pet.energy, +1);
   if (seconds % 10 == 0) addStat(pet.clean, -1);
   if (seconds % 60 == 0) pet.ageMin++;
@@ -143,10 +171,26 @@ void drawCentered(const char* s, uint8_t y) {
 
 void drawRoom() {
   u8g2.drawHLine(0, FLOOR_Y + 1, 128);
-  // window
-  u8g2.drawFrame(100, 13, 22, 18);
-  u8g2.drawVLine(110, 13, 18);
-  u8g2.drawHLine(100, 21, 22);
+  // window: snow falls outside when the room is cold, the sun shines when hot
+  u8g2.drawFrame(72, 13, 22, 18);
+  if (isCold()) {
+    for (uint8_t i = 0; i < 5; i++)
+      u8g2.drawPixel(74 + i * 4 + (i % 2), 14 + (frame / 6 + i * 5) % 16);
+  } else if (isHot()) {
+    u8g2.drawDisc(83, 22, 4);
+  }
+  u8g2.drawVLine(82, 13, 18);
+  u8g2.drawHLine(72, 21, 22);
+  // room thermometer sign
+  char buf[8];
+  u8g2.setFont(u8g2_font_5x7_tr);
+  u8g2.drawRFrame(101, 12, 26, 20, 2);
+  if (roomT == NO_READING) strcpy(buf, "--C");
+  else snprintf(buf, sizeof(buf), "%dC", roomT);
+  u8g2.drawStr(104, 20, buf);
+  if (roomT == NO_READING) strcpy(buf, "--%");
+  else snprintf(buf, sizeof(buf), "%u%%", roomH);
+  u8g2.drawStr(104, 29, buf);
   // little rug
   for (uint8_t x = 4; x < 30; x += 3) u8g2.drawPixel(x, FLOOR_Y + 2 + (x / 3) % 2);
 }
@@ -275,6 +319,12 @@ void updateHome() {
   if (blinkT) blinkT--;
   else if (random(100) == 0) blinkT = 5;
 
+  // Room temperature comments
+  if (!speechT && random(400) == 0) {
+    if (isCold()) say(random(2) ? "brr..." : "so cold!", 45);
+    else if (isHot()) say(random(2) ? "so hot~" : "*pant*", 45);
+  }
+
   // Mood moments
   if (random(250) == 0) {
     uint8_t m = mood();
@@ -292,7 +342,16 @@ void drawHome() {
   if (blinkT) face = cat_blink_bits;
   else if (mood() >= 70 && (frame / 90) % 3 == 0) face = cat_happy_bits;
   else if (speechT && (speech[0] == 'p')) face = cat_happy_bits;  // purring
-  drawCat(catX, face, bob);
+  // Shiver in short bursts when cold
+  int8_t shiver = (isCold() && !walking && (frame / 30) % 4 == 0) ? (frame % 2) : 0;
+  drawCat(catX + shiver, face, bob);
+  if (isHot()) {
+    // sweat drop sliding down her cheek
+    uint8_t dy = (frame / 6) % 6;
+    u8g2.drawPixel(catX + 23, CAT_Y + 3 + dy);
+    u8g2.drawPixel(catX + 23, CAT_Y + 4 + dy);
+    u8g2.drawPixel(catX + 22, CAT_Y + 4 + dy);
+  }
   drawParticles();
   if (speechT) drawSpeech(catX + 12);
   else {
@@ -430,8 +489,9 @@ void drawBath() {
 
 void drawInfo() {
   u8g2.setFont(u8g2_font_5x7_tr);
-  char buf[22];
-  snprintf(buf, sizeof(buf), "MOCHI  age %u min", pet.ageMin);
+  char buf[26];
+  if (roomT == NO_READING) snprintf(buf, sizeof(buf), "MOCHI  age %um  room --", pet.ageMin);
+  else snprintf(buf, sizeof(buf), "MOCHI  age %um  %dC %u%%", pet.ageMin, roomT, roomH);
   u8g2.drawStr(2, 7, buf);
   u8g2.drawHLine(0, 9, 128);
   drawBar(13, "food", pet.food);
@@ -439,7 +499,10 @@ void drawInfo() {
   drawBar(33, "energy", pet.energy);
   drawBar(43, "clean", pet.clean);
   uint8_t m = mood();
-  drawCentered(m >= 70 ? "mood: very happy" : m >= 40 ? "mood: ok" : "mood: sad", 62);
+  snprintf(buf, sizeof(buf), "mood: %s%s",
+           m >= 70 ? "very happy" : m >= 40 ? "ok" : "sad",
+           isCold() ? " (cold)" : isHot() ? " (hot)" : "");
+  drawCentered(buf, 62);
 }
 
 // ---- Main --------------------------------------------------------------------
@@ -452,6 +515,7 @@ void setup() {
   u8g2.setBusClock(400000);
   u8g2.begin();
   randomSeed(analogRead(A0) ^ micros());
+  dht.begin();
 
   EEPROM.get(EE_ADDR, pet);
   bool fresh = pet.magic != EE_MAGIC || digitalRead(PIN_STAR) == LOW;
