@@ -28,6 +28,12 @@
     OLED SDA -> A4, SCL -> A5, VCC -> 5V, GND -> GND
     DHT11 DATA -> D2 (3-pin module), VCC -> 5V, GND -> GND
     K1 (^) -> D12, K2 (v) -> D11, K3 (#) -> D10, K4 (*) -> D9
+    Battery gauge (optional): switched battery + -> 100k -> A1 -> 100k -> GND
+      (see "Battery power" in the README; set BATTERY_MONITOR to false if not wired)
+
+  On battery, a battery icon sits in the top-right corner and INFO shows a
+  battery bar. Mochi complains when it runs low and saves her progress
+  before it runs out.
 */
 
 #include <Arduino.h>
@@ -53,6 +59,36 @@ void readRoom() {
   float t = dht.readTemperature();
   float h = dht.readHumidity();
   if (!isnan(t) && !isnan(h)) { roomT = (int8_t)lround(t); roomH = (uint8_t)lround(h); }
+}
+
+// ---- Battery gauge: Li-ion cell through a 100k/100k divider on A1 -------------
+// The Nano runs from a 5 V boost converter, so AVcc (the ADC reference) is a
+// steady 5 V and A1 sees half the battery voltage.
+// An unconnected A1 floats and reads random values: set this to false if the
+// divider isn't wired.
+const bool BATTERY_MONITOR = true;
+const uint8_t PIN_BAT = A1;
+const uint16_t VREF_MV = 5000;     // measure the Nano's 5V pin and adjust if the % looks off
+int8_t batPct = -1;                // -1 = no battery (USB power)
+
+// Li-ion resting voltage -> charge %, linear between points
+const uint16_t BAT_MV[]  = {4200, 4000, 3850, 3750, 3650, 3500, 3300};
+const uint8_t  BAT_PCT[] = { 100,   80,   60,   40,   20,    5,    0};
+
+void readBattery() {
+  if (!BATTERY_MONITOR) return;
+  uint16_t raw = 0;
+  for (uint8_t i = 0; i < 8; i++) raw += analogRead(PIN_BAT);
+  uint32_t mv = (uint32_t)raw * VREF_MV * 2 / (1023UL * 8);
+  if (mv < 2800 || mv > 4500) { batPct = -1; return; }   // not a battery reading
+  if (mv >= BAT_MV[0]) { batPct = 100; return; }
+  for (uint8_t i = 1; i < sizeof(BAT_MV) / sizeof(BAT_MV[0]); i++) {
+    if (mv >= BAT_MV[i]) {
+      batPct = BAT_PCT[i] + (int32_t)(mv - BAT_MV[i]) * (BAT_PCT[i - 1] - BAT_PCT[i]) / (BAT_MV[i - 1] - BAT_MV[i]);
+      return;
+    }
+  }
+  batPct = 0;
 }
 
 // Page mode (_2_): draws the screen in 4 strips, saving 768 bytes of RAM
@@ -151,7 +187,14 @@ uint8_t lowestNeed() {
 void tickNeeds() {
   if (++frame % 30) return;
   seconds++;
-  if (seconds % 5 == 0) readRoom();
+  if (seconds % 5 == 0) {
+    readRoom();
+    readBattery();
+    // Save once when the battery is nearly empty, before the protection cuts power
+    static bool savedLow = false;
+    if (batPct >= 0 && batPct < 5 && !savedLow) { savePet(); savedLow = true; }
+    if (batPct >= 10) savedLow = false;
+  }
   bool asleep = (mode == SLEEPING);
   uint8_t foodEvery = isCold() ? 4 : 6;      // keeping warm burns calories
   uint8_t energyEvery = isHot() ? 5 : 8;     // heat makes her sluggish
@@ -199,6 +242,15 @@ void drawCat(int16_t x, const uint8_t* bits, int8_t bob) {
   u8g2.drawXBMP(x, CAT_Y + bob, CAT_OPEN_W, CAT_OPEN_H, bits);
 }
 
+// Small battery icon (10x5), filled by charge; blinks when almost empty
+void drawBattery(uint8_t x, uint8_t y) {
+  if (batPct < 0) return;
+  if (batPct < 10 && (frame / 15) % 2) return;
+  u8g2.drawFrame(x, y, 9, 5);
+  u8g2.drawVLine(x + 9, y + 1, 3);
+  u8g2.drawBox(x + 1, y + 1, (batPct * 7 + 50) / 100, 3);
+}
+
 void drawMenu() {
   u8g2.setFont(u8g2_font_5x7_tr);
   uint8_t x = 1;
@@ -212,8 +264,9 @@ void drawMenu() {
     } else {
       u8g2.drawStr(x + 1, 7, MENU[i]);
     }
-    x += w + 6;
+    x += w + 4;
   }
+  drawBattery(117, 2);
 }
 
 void drawSpeech(int16_t cx) {
@@ -323,6 +376,12 @@ void updateHome() {
   if (!speechT && random(400) == 0) {
     if (isCold()) say(random(2) ? "brr..." : "so cold!", 45);
     else if (isHot()) say(random(2) ? "so hot~" : "*pant*", 45);
+  }
+
+  // Battery running low
+  if (batPct >= 0 && !speechT) {
+    if (batPct < 5 && random(150) == 0) say("charge me!", 50);
+    else if (batPct < 15 && random(400) == 0) say("low battery!", 50);
   }
 
   // Mood moments
@@ -495,15 +554,16 @@ void drawInfo() {
   else snprintf(buf, sizeof(buf), "MOCHI  age %um  %dC %u%%", pet.ageMin, roomT, roomH);
   u8g2.drawStr(2, 7, buf);
   u8g2.drawHLine(0, 9, 128);
-  drawBar(13, "food", pet.food);
-  drawBar(23, "fun", pet.fun);
-  drawBar(33, "energy", pet.energy);
-  drawBar(43, "clean", pet.clean);
+  drawBar(11, "food", pet.food);
+  drawBar(20, "fun", pet.fun);
+  drawBar(29, "energy", pet.energy);
+  drawBar(38, "clean", pet.clean);
+  if (batPct >= 0) drawBar(47, "battery", batPct);
   uint8_t m = mood();
   snprintf(buf, sizeof(buf), "mood: %s%s",
            m >= 70 ? "very happy" : m >= 40 ? "ok" : "sad",
            isCold() ? " (cold)" : isHot() ? " (hot)" : "");
-  drawCentered(buf, 62);
+  drawCentered(buf, 63);
 }
 
 // ---- Main --------------------------------------------------------------------
@@ -517,6 +577,7 @@ void setup() {
   u8g2.begin();
   randomSeed(analogRead(A0) ^ micros());
   dht.begin();
+  readBattery();
 
   EEPROM.get(EE_ADDR, pet);
   bool fresh = pet.magic != EE_MAGIC || digitalRead(PIN_STAR) == LOW;

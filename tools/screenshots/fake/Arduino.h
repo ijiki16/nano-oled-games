@@ -16,6 +16,7 @@ typedef uint8_t byte;
 #define OUTPUT 1
 #define INPUT_PULLUP 2
 #define A0 14
+#define A1 15
 #define A4 18
 #define A5 19
 #define PROGMEM
@@ -37,7 +38,8 @@ inline int digitalRead(uint8_t pin) {
   uint8_t bit = pin == 12 ? 1 : pin == 11 ? 2 : pin == 10 ? 4 : pin == 9 ? 8 : 0;
   return (g_buttons & bit) ? LOW : HIGH;
 }
-inline int analogRead(uint8_t) { return 512; }
+// A1 = battery divider: 399 -> 3.9 V cell (about 72%)
+inline int analogRead(uint8_t pin) { return pin == A1 ? 399 : 512; }
 inline void randomSeed(unsigned long s) { if (s) srand(s); }
 inline long random(long howbig) { return howbig <= 0 ? 0 : rand() % howbig; }
 inline long random(long lo, long hi) { return hi <= lo ? lo : lo + random(hi - lo); }
